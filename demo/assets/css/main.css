@@ -1,0 +1,61 @@
+/* --- arbitrary div container for the toolbar --- */
+      #container {
+        width: 80%;
+        height: 200px;
+        background: #EEEEEE;
+        border: 1px solid #BDBDBD;
+        border-top: 0px;
+        margin: auto;
+      }
+
+      #toggle-bold {
+        margin-left: 100px;
+      }
+
+      /* --- button sizes --- */
+
+      #toolbar-arrange {
+        width: 70px;
+      }
+
+      #toolbar-font-family {
+        width: 100px;
+      }
+
+      /* --- toolbar icons --- */
+
+      #toolbar-undo {
+        background-image: url("../icons/undo.png");
+      }
+
+      #toolbar-redo {
+        background-image: url("../icons/redo.png");
+      }
+
+      #toolbar-text {
+        background-image: url("../icons/insert-text.png");
+      }
+
+      #toolbar-shape {
+        background-image: url("../icons/shapes.png");
+      }
+
+      #toolbar-bold {
+        background-image: url("../icons/bold.png");
+      }
+
+      #toolbar-italics {
+        background-image: url("../icons/italics.png");
+      }
+
+      #toolbar-underline {
+        background-image: url("../icons/underline.png");
+      }
+
+      #toolbar-fill-color {
+        background-image: url("../icons/fill-color.png");
+      }
+
+      #toolbar-effects {
+        background-image: url("../icons/effects.png");
+      }

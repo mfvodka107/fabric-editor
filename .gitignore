@@ -3,6 +3,9 @@ node_modules/
 dist/
 npm-debug.log
 yarn-error.log
+demo/
+assets/partials/
+icons/icon-material/
 
 # Editor directories and files
 .idea
@@ -10,3 +13,6 @@ yarn-error.log
 *.ntvs*
 *.njsproj
 *.sln
+
+# workspace
+*.sublime*

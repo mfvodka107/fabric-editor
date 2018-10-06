@@ -3,28 +3,63 @@ import App from './App.vue'
 import Gtoolbar from './Gtoolbar.vue'
 import CommonObjectTool from './CommonObjectTool.vue'
 
-new Vue({
+var canvasLayout = new Vue({
 	el: '#app',
-	render: h => h(App)
+	render: h => h(App),
 });
 
-new Vue({
+var gtoolbar = new Vue({
 	el: '#gtoolbar',
 	render: h => h(Gtoolbar)
 });
 
-new Vue({
+var commonTool = new Vue({
 	el: '#commonTool',
 	render: h => h(CommonObjectTool)
 });
+var options = {
+	/*onEditable: function (node) {
+		switch (node.field) {
+			default:
+			return {
+				field: false,
+				value: true
+			};
+		}
+	},*/
+	onChangeText: function (json) {
+		
+		var activeObject = canvas.getActiveObject();
+		json = JSON.parse(json);
+		for (var key in json) {
+		    if (json.hasOwnProperty(key) && activeObject[key] != json[key]) {
+		    	console.log(key);
+		    	activeObject.set(key, json[key]);
+		    }
+		}
+		canvas.renderAll();
+	}
+};
+var container = document.getElementById("monitor");
+window.editor = new JSONEditor(container , options);
+
 var canvas = new fabric.Canvas('c-layout');
+window.wcanvas = canvas;
 canvas.add(new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 }));
 
 canvas.selectionColor = 'rgba(0,255,0,0.2)';
 canvas.selectionBorderColor = 'red';
 canvas.selectionLineWidth = 1;
 
-
+function setAttr(name, value, ob) {
+    ob.toObject = (function (toObject) {
+        return function () {
+            return fabric.util.object.extend(toObject.call(this), {
+                [name]: value
+            });
+        };
+    })(ob.toObject);
+}
 
 $(function() {
 	console.log('loading Gtoolbar');

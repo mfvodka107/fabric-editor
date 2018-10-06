@@ -128,7 +128,7 @@
 
 <script>
 export default {
-	name: 'app',
+	name: 'gtoolbar',
 	data () {
 		return {
 			msg: 'rendering gtoolbar main'

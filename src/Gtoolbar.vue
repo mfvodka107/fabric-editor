@@ -92,6 +92,9 @@
 
 		<div class="gt-separator"></div>
 
+		<div id="toolbar-fontcolor" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div>
+
 		<div id="toolbar-bold" class="gt-button"></div>
 		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-bold">Bold</div>
 
@@ -100,6 +103,40 @@
 
 		<div id="toolbar-underline" class="gt-button"></div>
 		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-underline">Underline</div>
+
+		<div id="toolbar-strikethrough" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Strikethrough</div>
+
+		<div id="toolbar-charspacing" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-charspacing">Letter spacing</div>
+
+		<div id="toolbar-lineheight" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-lineheight">Line height</div>
+
+		<div class="gt-separator"></div>
+
+		<div id="toolbar-alignleft" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignleft">Text-align Left</div>
+
+		<div id="toolbar-aligncenter" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligncenter">Text-align Center</div>
+
+		<div id="toolbar-alignright" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignright">Text-align Right</div>
+
+		<div id="toolbar-alignjustify" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
+
+		<div class="gt-separator"></div>
+
+		<div id="toolbar-aligntop" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
+
+		<div id="toolbar-alignmiddle" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
+
+		<div id="toolbar-alignbottom" class="gt-button"></div>
+		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
 
 		<div class="gt-separator"></div>
 

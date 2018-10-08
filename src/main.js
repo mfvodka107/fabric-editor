@@ -139,16 +139,61 @@ canvas.on(  'object:modified', onObjectModified,
 		canvas.counter++;
 		updateModifications(true);
 	});
+function saveJson() {
+	canvas.toJSON(['selectable' , 'evented' , 'data' , 'isbackground']);
+	
+	window.consoleJSON = JSON.stringify(canvas);
+    fabricJSON = JSON.parse(window.consoleJSON);
+
+}
+function loadJson(json) {
+	canvas.loadFromJSON(json, function () {
+
+            canvas.renderAll();
+            for (var i = fabricJSON.objects.length - 1; i >= 0; i--) {
+                if ('data' in fabricJSON.objects[i]) {
+                    setAttr('data', fabricJSON.objects[i].data, canvas.getObjects()[i]);
+                }
+                if ('isbackground' in fabricJSON.objects[i]) {
+                    setAttr('isbackground', true, canvas.getObjects()[i]);
+                    setAttr('selectable', false, canvas.getObjects()[i]);
+                    setAttr('evented', false, canvas.getObjects()[i]);
+                }
+            }
+        });
+}
 function onObjectModified() {
-        console.log('Object changed');
-        //log('Object vừa thay đổi.');
-        canvas.toJSON(['selectable' , 'evented' , 'data' , 'isbackground']);
-        //updateModifications(true);
-        //setCookie('fabricJSON' , JSON.stringify(canvas) , '-1');
-        consoleJSON = JSON.stringify(canvas);
-        $("#json-console").val(consoleJSON);
-        fabricJSON = JSON.parse(consoleJSON);
+	console.log('Object changed');
+        
+        updateModifications(true);
+        saveJson();
     };
+
+var mods = 0;
+canvas.counter = 0;
+var newleft = 0;
+canvas.selection = false;
+function updateModifications(savehistory) {
+    if (savehistory === true) {
+        console.log('save history')
+        canvas.toJSON(['selectable' , 'evented' , 'data' , 'isbackground']);
+        var myjson = JSON.stringify(canvas);
+        state.push(myjson);
+    }
+}
+function undo() {
+    if (mods < state.length) {
+    	loadJson(state[state.length - 1 - mods - 1]);
+        mods += 1;
+    }
+}
+function redo() {
+    if (mods > 0) {
+        canvas.clear().renderAll();
+        loadJson(state[state.length - 1 - mods + 1]);
+        mods -= 1;
+    }
+}
 
 
 // register and create function for gtoolbar button
@@ -210,28 +255,28 @@ $(function() {
         });
 	registerButton($("#toolbar-horizonalmovement"), function() {
 
-        });
+	});
 
 	// scaling
 	registerButton($("#toolbar-lockscaling"), function() {
-        });
+	});
 	registerButton($("#toolbar-verticalscaling"), function() {
-  
-        });
+
+	});
 	registerButton($("#toolbar-horizonalscaling"), function() {
 
-        });
+	});
 	registerButton($("#toolbar-scaletoresize"), function() {
-   
-        });
+
+	});
 
 
 	registerButton($("#toolbar-lockrotation"), function() {
-    
-        });
+
+	});
 	registerButton($("#toolbar-lockrotation-flip"), function() {
 
-        });
+	});
 
 	// data object
 	registerButton($("#toolbar-newdata"), function() {

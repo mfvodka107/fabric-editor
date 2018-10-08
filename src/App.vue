@@ -300,6 +300,8 @@ export default {
   name: 'app',
   data () {
     return {
+      consoleJSON: window.consoleJSON,
+      consoleJSON: window.fabricJSON,
       objectSelected: false,
       textObject: false,
       imageObject: false,

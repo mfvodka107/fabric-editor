@@ -1,23 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Gtoolbar from './Gtoolbar.vue'
-import CommonObjectTool from './CommonObjectTool.vue'
-
 
 var canvasLayout = new Vue({
 	el: '#app',
 	render: h => h(App),
 });
 
-var gtoolbar = new Vue({
-	el: '#gtoolbar',
-	render: h => h(Gtoolbar)
-});
-
-var commonTool = new Vue({
-	el: '#commonTool',
-	render: h => h(CommonObjectTool)
-});
+// json editor js created
 var options = {
 	/*onEditable: function (node) {
 		switch (node.field) {
@@ -34,7 +23,6 @@ var options = {
 		json = JSON.parse(json);
 		for (var key in json) {
 			if (json.hasOwnProperty(key) && activeObject[key] != json[key]) {
-				console.log(key);
 				activeObject.set(key, json[key]);
 			}
 		}
@@ -44,14 +32,14 @@ var options = {
 var container = document.getElementById("monitor");
 window.editor = new JSONEditor(container , options);
 
+// canvas fabric js created
 var canvas = new fabric.Canvas('c-layout');
 window.wcanvas = canvas;
-canvas.add(new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 }));
-
 canvas.selectionColor = 'rgba(0,255,0,0.2)';
 canvas.selectionBorderColor = 'red';
 canvas.selectionLineWidth = 1;
 
+// use util js to change structure of object
 function setAttr(name, value, ob) {
 	ob.toObject = (function (toObject) {
 		return function () {
@@ -64,27 +52,23 @@ function setAttr(name, value, ob) {
 
 function renderVieportBorders() {
 	var ctx = canvas.getContext();
-
 	ctx.save();
-
 	ctx.fillStyle = 'rgba(0,0,0,0.1)';
-
 	ctx.fillRect(
 		canvas.viewportTransform[4],
 		canvas.viewportTransform[5],
 		canvas.getWidth() * canvas.getZoom(),
 		canvas.getHeight() * canvas.getZoom());
-
 	ctx.setLineDash([5, 5]);
-
 	ctx.strokeRect(
 		canvas.viewportTransform[4],
 		canvas.viewportTransform[5],
 		canvas.getWidth() * canvas.getZoom(),
 		canvas.getHeight() * canvas.getZoom());
-
 	ctx.restore();
 }
+
+
 canvas.on('object:selected', function (opt) {
 	var target = opt.target;
 	if (target._cacheCanvas) {
@@ -166,9 +150,9 @@ function onObjectModified() {
         fabricJSON = JSON.parse(consoleJSON);
     };
 
+
+// register and create function for gtoolbar button
 $(function() {
-	console.log('loading Gtoolbar');
-	/* --- sample event handlers for toolbar buttons --- */
 	registerButton($('#toolbar-text'), function() {
 		var newtext = new fabric.Textbox('new textbox', {
 			fontSize: 20,
@@ -185,12 +169,10 @@ $(function() {
 			hasRotatingPoint: true,
 			centerTransform: true,
 		});
-
 		canvas.add(newtext);
 	});
 	registerButton($('#toolbar-new-image'), function() {
 		fabric.Image.fromURL('https://via.placeholder.com/100?text=data+image', function (img) {
-
 			img.set({
 				left: 0,
 				top: 0,
@@ -199,9 +181,7 @@ $(function() {
 			})
 			.scale(1)
 			.setCoords();
-
 			canvas.add(img);
-			
 		});
 	});
 	registerButton($("#toolbar-undo"), function() {
@@ -211,6 +191,62 @@ $(function() {
 	registerButton($("#toolbar-circle"), function() {
             // insert circle
         });
+
+	// common tool
+	registerButton($("#toolbar-send-backward"), function() {
+            // insert circle
+        });
+
+	registerButton($("#toolbar-bring-forward"), function() {
+            // insert circle
+        });
+
+	// movement
+	registerButton($("#toolbar-lockmovement"), function() {
+            // insert circle
+        });
+	registerButton($("#toolbar-verticalmovement"), function() {
+            // insert circle
+        });
+	registerButton($("#toolbar-horizonalmovement"), function() {
+
+        });
+
+	// scaling
+	registerButton($("#toolbar-lockscaling"), function() {
+        });
+	registerButton($("#toolbar-verticalscaling"), function() {
+  
+        });
+	registerButton($("#toolbar-horizonalscaling"), function() {
+
+        });
+	registerButton($("#toolbar-scaletoresize"), function() {
+   
+        });
+
+
+	registerButton($("#toolbar-lockrotation"), function() {
+    
+        });
+	registerButton($("#toolbar-lockrotation-flip"), function() {
+
+        });
+
+	// data object
+	registerButton($("#toolbar-newdata"), function() {
+            // insert circle
+        });
+	registerButton($("#toolbar-editdata"), function() {
+            // insert circle
+        });
+	registerButton($("#toolbar-deletedata"), function() {
+            // insert circle
+        });
+
+
+	// end common tool
+	//
 
 	registerToggleButton($("#toolbar-bold"), function() {
             // set strong font weight
@@ -222,14 +258,10 @@ $(function() {
 		toggle($("#toolbar-bold"), true);
 	});
 
-	/* --- programmatically adding items to a dropdown --- */
-	var button = $("#toolbar-font-family");
-	for (i = 0; i < 10; i++) {
-		insertSubmenuItem(button, $("<div class='gt-submenu-item'><span>Monospace</span></div>"));
-	}
+
 
 	/* --- color picker --- */
-	$("#color-picker").colpick({
+	$("#color-picker , #background-color-picker").colpick({
 		colorScheme:'dark',
 		onChange:function(hsb,hex,rgb,el,bySetColor) {
 			$(el).val('#'+hex);

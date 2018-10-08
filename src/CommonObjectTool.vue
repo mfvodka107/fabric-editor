@@ -1,9 +1,8 @@
 <template>
 	<div class="gt-toolbar">
-		
-
-		<div id="toolbar-font-size" class="gt-button gt-input gt-dropdown">
-			<input type="text" id="font-size" maxlength="3" class="gt-text-input gt-title gt-autoupdate">
+		<div id="toolbar-font-size" class="gt-button gt-input gt-dropdown" style="width: 80px;">
+			<img src="icons/text-size.png" class="gt-submenu-icon" style="float: left; margin: 6px 0 0 0;">
+			<input type="text" id="font-size" maxlength="3" value="12" class="gt-text-input gt-title gt-autoupdate" style="float: none;">
 			<div class="gt-arrow"></div>
 
 			<div class="gt-submenu gt-noselect gt-scrolling gt-noshow">

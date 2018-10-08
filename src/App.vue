@@ -13,6 +13,7 @@
   </div>
 </template>
 <script>
+import Gtoolbar from './Gtoolbar.vue'
 
 export default {
   name: 'app',
@@ -24,11 +25,15 @@ export default {
   },
   methods: {
     canvasClick: function () {
+      //console.log(Gtoolbar);
       this.activeObject = window.wcanvas.getActiveObject();
       if (!this.activeObject) {
         window.editor.set({});
+        Gtoolbar.data.showTools(0);
         return;
       }
+      Gtoolbar.methods.showTools(1);
+
       window.editor.set(JSON.parse(JSON.stringify(this.activeObject)));
     }
   }

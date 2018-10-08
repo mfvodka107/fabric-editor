@@ -33,7 +33,7 @@
 
 		<div class="gt-separator"></div>
 
-		<div id="toolbar-arrange" class="gt-button gt-dropdown">
+		<div id="toolbar-arrange" class="gt-button gt-dropdown" v-show="active">
 			<span class="gt-title">Arrange</span>
 			<div class="gt-arrow"></div>
 
@@ -47,8 +47,8 @@
 					Bring Forward
 				</div>
 			</div><!-- /toolbar-submenu -->
+		</div>
 
-		</div><!-- /toolbar-arrange -->
 		<div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-arrange">Arrange Objects</div>
 
 		<div class="gt-separator"></div>
@@ -175,10 +175,17 @@
 
 <script>
 export default {
-	name: 'gtoolbar',
+	name: 'Gtoolbar',
 	data () {
 		return {
+			active: 0,
 			msg: 'rendering gtoolbar main'
+		}
+	},
+	methods: {
+		showTools: function (val) {
+			console.log(this.active + ' ' + val + ' ' + this.msg)
+			this.active = val;
 		}
 	}
 }

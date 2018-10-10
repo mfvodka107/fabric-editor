@@ -26,6 +26,17 @@
     window.fabricJSON = JSON.parse(consoleJSON);
     console.log(fabricJSON);
     var state = [consoleJSON];
+
+    $(document).on('click', '#app button', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    $(document).on('keypress', '#app input', function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
   </script>
   <script src="dist/build.js"></script>
 </body>

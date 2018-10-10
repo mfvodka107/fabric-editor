@@ -285,7 +285,7 @@
       <div style="width:30%; float:left; position: relative;">
         <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="dataEdit">
         </div>
-        <div id="monitor">
+        <div id="monitor" style="max-height:500px; overflow-y:auto;">
         </div>
       </div>
 
@@ -301,7 +301,7 @@ export default {
   data () {
     return {
       consoleJSON: window.consoleJSON,
-      consoleJSON: window.fabricJSON,
+      fabricJSON: window.fabricJSON,
       objectSelected: false,
       textObject: false,
       imageObject: false,

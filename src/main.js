@@ -288,16 +288,21 @@ $(function() {
 	registerButton($("#toolbar-deletedata"), function() {
             // insert circle
         });
-
+	
+	registerToggleButton($("#toolbar-lockmovement"), function() {
+            // set strong font weight
+    }, function() {
+            // set normal font weight
+    });
 
 	// end common tool
 	//
 
 	registerToggleButton($("#toolbar-bold"), function() {
             // set strong font weight
-        }, function() {
+    }, function() {
             // set normal font weight
-        });
+    });
 
 	$("#toggle-bold").click(function() {
 		toggle($("#toolbar-bold"), true);

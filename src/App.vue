@@ -283,7 +283,7 @@
         </div>
       </div>
       <div style="width:30%; float:left; position: relative;">
-        <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="dataEdit">
+        <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="hasData">
         </div>
         <div id="monitor" style="max-height:500px; overflow-y:auto;">
         </div>
@@ -306,7 +306,7 @@ export default {
       textObject: false,
       imageObject: false,
 
-      dataEdit: false,
+      hasData: false,
       activeObject : {},
       msg: 'Welcome to Your Vue.js App'
     }

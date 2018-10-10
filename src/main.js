@@ -51,6 +51,9 @@ var mods = 0;
 canvas.counter = 0;
 var newleft = 0;
 
+var copiedObject,
+copiedObjects = new Array();
+
 // use util js to change structure of object
 canvas.on('object:selected', function (opt) {
 	var target = opt.target;
@@ -119,20 +122,26 @@ canvas.on(  'object:modified', onObjectModified,
 
 canvas.on('object:scaling', function(e) {
 	console.log('object scaling');
-	log('Object tăng kích thước.');
-	if (e.target.type === 'group') {
-		
-		var groupScaleX = e.target.scaleX;
-		var groupScaleY = e.target.scaleY;
-		
-		e.target.resizeToScale();
-		
-		e.target._objects.forEach(function(object) {
-			object.resizeToScale(groupScaleX, groupScaleY, true);
-		});
-	} else {
-		e.target.resizeToScale();
+	var toResize = true;
+	canvasLayout.$watch('scale.toResize' , function (newValue, oldValue) {
+		if (newValue !== toResize) {
+			toResize = newValue;
+		}
+	});
+
+	if (toResize) {
+		if (e.target.type === 'group') {
+			var groupScaleX = e.target.scaleX;
+			var groupScaleY = e.target.scaleY;
+			e.target.resizeToScale();
+			e.target._objects.forEach(function(object) {
+				object.resizeToScale(groupScaleX, groupScaleY, true);
+			});
+		} else {
+			e.target.resizeToScale();
+		}
 	}
+
 });
 
 fabric.Canvas.prototype.preserveObjectStacking = true;
@@ -149,7 +158,6 @@ fabric.Object.prototype.resizeToScale = function(scaleX, scaleY, belongsToGroup)
 		this.scaleX = 1;
 		this.scaleY = 1;
 		if (belongsToGroup) {
-
 			this.left *= objectScaleX;
 			this.top *= objectScaleY;
 		}
@@ -173,13 +181,95 @@ fabric.Object.prototype.resizeToScale = function(scaleX, scaleY, belongsToGroup)
 	}
 
 };
+var STEP = 1;
+
+var Direction = {
+	LEFT: 0,
+	UP: 1,
+	RIGHT: 2,
+	DOWN: 3
+};
+fabric.util.addListener(document.getElementById('canvas-wrapper'), 'keydown', function (options) {
+
+	options.preventDefault();
+        /*if (options.repeat) {
+            return;
+        }*/
+        STEP = ($("#step-key").val() > 0) ? parseInt($("#step-key").val()) : 1;
+        var key = options.which || options.keyCode; // key detection
+        if (key === 37) { // handle Left key
+        	moveSelected(Direction.LEFT);
+        } else if (key === 38) { // handle Up key
+        	moveSelected(Direction.UP);
+        } else if (key === 39) { // handle Right key
+        	moveSelected(Direction.RIGHT);
+        } else if (key === 40) { // handle Down key
+        	moveSelected(Direction.DOWN);
+        } else if (key === 46) {
+        	var activeObjects = canvas.getActiveObjects();
+        	canvas.discardActiveObject()
+        	if (activeObjects.length) {
+        		canvas.remove.apply(canvas, activeObjects);
+        	}
+        }
+        
+        if (key == 90 && options.ctrlKey) {
+        	console.log('Ctrl + z pressed.');
+        	undo();
+        }
+        if (key == 89 && options.ctrlKey) {
+        	console.log('Ctrl + y pressed.');
+        	redo();
+        }
+
+        if (key == 67 && options.ctrlKey) {
+        	console.log('Ctrl + c pressed.');
+        	copy();
+        }
+        if (key == 86 && options.ctrlKey) {
+        	console.log('Ctrl + v pressed.');
+        	paste();
+        	onObjectModified();
+        }
+        
+
+    });
+
+function moveSelected(direction) {
+	var activeObject = canvas.getActiveObject();
+
+	if (activeObject) {
+		onObjectModified();
+		switch (direction) {
+			case Direction.LEFT:
+
+			activeObject.left -= STEP;
+			break;
+			case Direction.UP:
+			activeObject.top -= STEP;
+			break;
+			case Direction.RIGHT:
+			activeObject.left += STEP;
+			break;
+			case Direction.DOWN:
+			activeObject.top += STEP;
+			break;
+		}
+		activeObject.setCoords();
+		canvas.renderAll();
+
+	} else {
+		console.log('no object selected');
+	}
+
+}
 
 function changeImgSrc(activeObject, obWidth, obHeight) {
 	var img = new Image();
 	img.onload = function() {
 		activeObject.setElement(img);
 	}
-
+	var image_text = 'image';
 	if ('data' in activeObject && activeObject.data.arg == 'profile') {
 		var image_text = 'profile+avatar';
 		if ('year' in activeObject.data) {
@@ -278,6 +368,77 @@ function redo() {
 	}
 }
 
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function delete_cookie(name) {
+  setCookie(name, "", -1);
+}
+
+function copy(){
+    copiedObjects = new Array();
+    if(canvas.getActiveObjects()){
+        //console.log(canvas.getActiveGroup().getObjects());
+        canvas.getActiveObjects().forEach(function(o){
+            var object = fabric.util.object.clone(o);
+            copiedObjects.push(object);
+        });             
+    }
+    else if(canvas.getActiveObject()){
+        var object = fabric.util.object.clone(canvas.getActiveObject());
+        copiedObject = object;
+        copiedObjects = new Array();
+        
+    }
+}
+
+function paste(){
+    if(copiedObjects.length > 0){
+        for(var i in copiedObjects){
+            copiedObjects[i]=fabric.util.object.clone(copiedObjects[i]);
+            
+            copiedObjects[i].set("top", copiedObjects[i].top+100);
+            copiedObjects[i].set("left", copiedObjects[i].left+100);
+            
+            canvas.add(copiedObjects[i]);
+            canvas.item(canvas.size() - 1).hasControls = true;
+        }                
+    }
+    else if(copiedObject){
+        copiedObject= fabric.util.object.clone(copiedObject);
+        copiedObject.set("top", 150);
+        copiedObject.set("left", 150);
+        canvas.add(copiedObject);
+        canvas.item(canvas.size() - 1).hasControls = true;
+    }
+    canvas.renderAll();  
+}
+
+function setActiveProp(name, value) {
+	var object = canvas.getActiveObject();
+	if (!object) return;
+	object.set(name, value).setCoords();
+	canvas.renderAll();
+}
 
 // register and create function for gtoolbar button
 $(function() {
@@ -300,7 +461,7 @@ $(function() {
 		canvas.add(newtext);
 	});
 	registerButton($('#toolbar-new-image'), function() {
-		fabric.Image.fromURL('https://via.placeholder.com/100?text=data+image', function (img) {
+		fabric.Image.fromURL('https://via.placeholder.com/100?text=image', function (img) {
 			img.set({
 				left: 0,
 				top: 0,
@@ -325,44 +486,56 @@ $(function() {
 
 	// common tool
 	registerButton($("#toolbar-send-backward"), function() {
-            // insert circle
-        });
+		var activeObject = canvas.getActiveObject();
+		if (activeObject) {
+			canvas.sendBackwards(activeObject);
+		}
+	});
 
 	registerButton($("#toolbar-bring-forward"), function() {
-            // insert circle
-        });
+		var activeObject = canvas.getActiveObject();
+		if (activeObject) {
+			canvas.bringForward(activeObject);
+		}
+	});
 
 	// movement
 	registerToggleButton($("#toolbar-lockmovement"), function() {
-
+		setActiveProp('lockMovementX', true);
+		setActiveProp('lockMovementY', true);
 	}, function() {
-
+		setActiveProp('lockMovementX', false);
+		setActiveProp('lockMovementY', false);
 	});
 
 	registerToggleButton($("#toolbar-verticalmovement"), function() {
-
+		setActiveProp('lockMovementX', true);
 	}, function() {
-
+		setActiveProp('lockMovementX', false);
 	});
 
 	registerToggleButton($("#toolbar-horizonalmovement"), function() {
-
+		setActiveProp('lockMovementY', true);
 	}, function() {
-
+		setActiveProp('lockMovementY', false);
 	});
 	
 
 	// scaling
-	registerButton($("#toolbar-lockscaling"), function() {
+	registerToggleButton($("#toolbar-verticalscaling"), function() {
+		setActiveProp('lockScalingX', true);
+	}, function() {
+		setActiveProp('lockScalingX', false);
 	});
-	registerButton($("#toolbar-verticalscaling"), function() {
-
+	registerToggleButton($("#toolbar-horizonalscaling"), function() {
+		setActiveProp('lockScalingY', true);
+	}, function() {
+		setActiveProp('lockScalingY', false);
 	});
-	registerButton($("#toolbar-horizonalscaling"), function() {
-
-	});
-	registerButton($("#toolbar-scaletoresize"), function() {
-
+	registerToggleButton($("#toolbar-scaletoresize"), function() {
+		canvasLayout.$data.scale.toRezise = true;
+	}, function() {
+		canvasLayout.$data.scale.toRezise = false;
 	});
 
 
@@ -387,7 +560,9 @@ $(function() {
 	
 
 	// end common tool
-	//
+	// textbox editor tool
+	
+	// end textbox editor tool
 
 	registerToggleButton($("#toolbar-bold"), function() {
             // set strong font weight
@@ -402,14 +577,28 @@ $(function() {
 
 
 	/* --- color picker --- */
-	$("#color-picker , #background-color-picker").colpick({
+	$("#color-picker").colpick({
 		colorScheme:'dark',
 		onChange:function(hsb,hex,rgb,el,bySetColor) {
 			$(el).val('#'+hex);
+			setActiveProp('fill', '#'+hex);
 		},
 		onSubmit:function(hsb,hex,rgb,el,bySetColor) {
 			$(el).val('#'+hex);
 			$(el).colpickHide();
+			setActiveProp('fill', '#'+hex);
+		}
+	});
+	$("#background-color-picker").colpick({
+		colorScheme:'dark',
+		onChange:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).val('#'+hex);
+			setActiveProp('backgroundColor', '#'+hex);
+		},
+		onSubmit:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).val('#'+hex);
+			$(el).colpickHide();
+			setActiveProp('backgroundColor', '#'+hex);
 		}
 	});
 

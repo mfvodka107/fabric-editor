@@ -59,14 +59,12 @@
           <div class="gt-arrow"></div>
 
           <div class="gt-submenu gt-noselect gt-noshow">
-            <div class="gt-submenu-item" id="toolbar-lockmovement">
-              Lock Movement
+          
+            <div v-bind:class="{ 'gt-button-active': movement.lockMovementX }" class="gt-submenu-item" id="toolbar-verticalmovement" action="lock">
+              {{ movement.lockX }} Movement
             </div>
-            <div class="gt-submenu-item" id="toolbar-verticalmovement" action="lock">
-              Lock Vertical Movement
-            </div>
-            <div class="gt-submenu-item" id="toolbar-horizonalmovement" action="lock">
-              Lock Horizonal Movement
+            <div v-bind:class="{ 'gt-button-active': movement.lockMovementY }" class="gt-submenu-item" id="toolbar-horizonalmovement" action="lock">
+              {{ movement.lockY }} Movement
             </div>
           </div><!-- /toolbar-submenu -->
         </div>
@@ -76,17 +74,15 @@
           <div class="gt-arrow"></div>
 
           <div class="gt-submenu gt-noselect gt-noshow">
-            <div class="gt-submenu-item" id="toolbar-lockscaling">
-              Lock Scaling
-            </div>
-            <div class="gt-submenu-item" id="toolbar-verticalscaling">
+            
+            <div v-bind:class="{ 'gt-button-active': scale.lockScalingX }" class="gt-submenu-item" id="toolbar-verticalscaling">
               Lock Vertical Scaling
             </div>
-            <div class="gt-submenu-item" id="toolbar-horizonalscaling">
+            <div v-bind:class="{ 'gt-button-active': scale.lockScalingY }" class="gt-submenu-item" id="toolbar-horizonalscaling">
               Lock Horizonal Scaling
             </div>
             
-            <div class="gt-submenu-item" id="toolbar-scaletoresize">
+            <div v-bind:class="{ 'gt-button-active': scale.toResize }" class="gt-submenu-item" id="toolbar-scaletoresize">
               Scale to Resize
             </div>
           </div><!-- /toolbar-submenu -->
@@ -308,7 +304,19 @@ export default {
 
       hasData: false,
       activeObject : {},
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+
+      movement: {
+        lockX: 'Lock Horizonal',
+        lockMovementX: false,
+        lockY: 'Lock Vertical',
+        lockMovementY: false
+      }, 
+      scale: {
+        lockScalingX: false,
+        lockScalingY: false,
+        toResize: true
+      }
     }
   },
   methods: {

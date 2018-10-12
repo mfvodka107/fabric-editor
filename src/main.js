@@ -369,68 +369,68 @@ function redo() {
 }
 
 function setCookie(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    var expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	var expires = "expires="+d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
 function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) == ' ') {
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+	}
+	return "";
 }
 
 function delete_cookie(name) {
-  setCookie(name, "", -1);
+	setCookie(name, "", -1);
 }
 
 function copy(){
-    copiedObjects = new Array();
-    if(canvas.getActiveObjects()){
+	copiedObjects = new Array();
+	if(canvas.getActiveObjects()){
         //console.log(canvas.getActiveGroup().getObjects());
         canvas.getActiveObjects().forEach(function(o){
-            var object = fabric.util.object.clone(o);
-            copiedObjects.push(object);
+        	var object = fabric.util.object.clone(o);
+        	copiedObjects.push(object);
         });             
     }
     else if(canvas.getActiveObject()){
-        var object = fabric.util.object.clone(canvas.getActiveObject());
-        copiedObject = object;
-        copiedObjects = new Array();
-        
+    	var object = fabric.util.object.clone(canvas.getActiveObject());
+    	copiedObject = object;
+    	copiedObjects = new Array();
+
     }
 }
 
 function paste(){
-    if(copiedObjects.length > 0){
-        for(var i in copiedObjects){
-            copiedObjects[i]=fabric.util.object.clone(copiedObjects[i]);
-            
-            copiedObjects[i].set("top", copiedObjects[i].top+100);
-            copiedObjects[i].set("left", copiedObjects[i].left+100);
-            
-            canvas.add(copiedObjects[i]);
-            canvas.item(canvas.size() - 1).hasControls = true;
-        }                
-    }
-    else if(copiedObject){
-        copiedObject= fabric.util.object.clone(copiedObject);
-        copiedObject.set("top", 150);
-        copiedObject.set("left", 150);
-        canvas.add(copiedObject);
-        canvas.item(canvas.size() - 1).hasControls = true;
-    }
-    canvas.renderAll();  
+	if(copiedObjects.length > 0){
+		for(var i in copiedObjects){
+			copiedObjects[i]=fabric.util.object.clone(copiedObjects[i]);
+
+			copiedObjects[i].set("top", copiedObjects[i].top+100);
+			copiedObjects[i].set("left", copiedObjects[i].left+100);
+
+			canvas.add(copiedObjects[i]);
+			canvas.item(canvas.size() - 1).hasControls = true;
+		}                
+	}
+	else if(copiedObject){
+		copiedObject= fabric.util.object.clone(copiedObject);
+		copiedObject.set("top", 150);
+		copiedObject.set("left", 150);
+		canvas.add(copiedObject);
+		canvas.item(canvas.size() - 1).hasControls = true;
+	}
+	canvas.renderAll();  
 }
 
 function setActiveProp(name, value) {
@@ -539,23 +539,28 @@ $(function() {
 	});
 
 
-	registerButton($("#toolbar-lockrotation"), function() {
-
+	registerToggleButton($("#toolbar-lockrotation"), function() {
+		setActiveProp('lockRotation', true);
+	}, function() {
+		setActiveProp('lockRotation', false);
 	});
-	registerButton($("#toolbar-lockrotation-flip"), function() {
 
+	registerToggleButton($("#toolbar-lockrotation-flip"), function() {
+		setActiveProp('lockScalingFlip', true);
+	}, function() {
+		setActiveProp('lockScalingFlip', false);
 	});
 
 	// data object
 	registerButton($("#toolbar-newdata"), function() {
-            // insert circle
-        });
+		
+	});
 	registerButton($("#toolbar-editdata"), function() {
-            // insert circle
-        });
+
+	});
 	registerButton($("#toolbar-deletedata"), function() {
-            // insert circle
-        });
+
+	});
 
 	
 

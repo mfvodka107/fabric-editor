@@ -152,146 +152,132 @@
 
         <div id="toolbar-newdata" class="gt-button" style="background-image: url(icons/data-new.png);" v-show="hasData === false" v-on:click="newData"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-newdata">Add Data to Object</div>
+        <div id="toolbar-deletedata" class="gt-button" style="background-image: url(icons/data-delete.png);" v-show="hasData" v-on:click="delData"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-deletedata">Delete data in Object</div>
+        <div class="gt-separator"></div>
+      </div>
 
-        <!-- <div id="toolbar-editdata" class="gt-button" style="background-image: url(icons/data-edit.png);" ></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-editdata">Edit Data in Object</div> -->
 
-          <div id="toolbar-deletedata" class="gt-button" style="background-image: url(icons/data-delete.png);" v-show="hasData" v-on:click="delData"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-deletedata">Delete data in Object</div>
-          <div class="gt-separator"></div>
+      <div id="toolbar-effects" class="gt-button gt-dropdown">
+        <div class="gt-arrow"></div>
+        <div class="gt-submenu gt-noselect gt-noshow gt-no-auto-close">
+          <p>You can put anything <br/> you want in here.</p>
         </div>
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-effects">Effects</div>
+    </div><!-- /toolbar common object -->
 
-
-        <div id="toolbar-effects" class="gt-button gt-dropdown">
+    <div class="gt-toolbar">
+      <div v-show="textObject">
+        <div id="toolbar-font-size" class="gt-button gt-input gt-dropdown" style="width: 80px;">
+          <img src="icons/text-size.png" class="gt-submenu-icon" style="float: left; margin: 6px 0 0 0;">
+          <input type="text" id="font-size" maxlength="3" value="12" class="gt-text-input gt-title gt-autoupdate" style="float: none;">
           <div class="gt-arrow"></div>
 
-          <div class="gt-submenu gt-noselect gt-noshow gt-no-auto-close">
-
-            <p>You can put anything <br/> you want in here.</p>
-
-          </div>
+          <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
+            <div class="gt-submenu-item">
+              <span>10</span>
+            </div>
+            <div class="gt-submenu-item gt-default">
+              <span>12</span>
+            </div>
+            <div class="gt-submenu-item">
+              <span>14</span>
+            </div>
+          </div><!-- /toolbar-submenu -->
 
         </div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-effects">Effects</div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-font-size">Font Size</div>
 
-      </div><!-- /toolbar common object -->
+        <div class="gt-separator"></div>
 
-      <div class="gt-toolbar">
-        <div v-show="textObject">
-          <div id="toolbar-font-size" class="gt-button gt-input gt-dropdown" style="width: 80px;">
-            <img src="icons/text-size.png" class="gt-submenu-icon" style="float: left; margin: 6px 0 0 0;">
-            <input type="text" id="font-size" maxlength="3" value="12" class="gt-text-input gt-title gt-autoupdate" style="float: none;">
-            <div class="gt-arrow"></div>
+        <div id="toolbar-font-family" class="gt-button gt-dropdown gt-noselect">
+          <span class="gt-title gt-autoupdate" id="current-font"></span>
+          <div class="gt-arrow"></div>
 
-            <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
-              <div class="gt-submenu-item">
-                <span>10</span>
-              </div>
-              <div class="gt-submenu-item gt-default">
-                <span>12</span>
-              </div>
-              <div class="gt-submenu-item">
-                <span>14</span>
-              </div>
-            </div><!-- /toolbar-submenu -->
+          <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
+            <div class="gt-submenu-item">
+              <span>Tahoma</span>
+            </div>
+            <div class="gt-submenu-item gt-default">
+              <span>Arial</span>
+            </div>
+          </div><!-- /toolbar-submenu -->
 
-          </div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-font-size">Font Size</div>
-
-          <div class="gt-separator"></div>
-
-          <div id="toolbar-font-family" class="gt-button gt-dropdown gt-noselect">
-            <span class="gt-title gt-autoupdate" id="current-font"></span>
-            <div class="gt-arrow"></div>
-
-            <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
-              <div class="gt-submenu-item">
-                <span>Tahoma</span>
-              </div>
-              <div class="gt-submenu-item gt-default">
-                <span>Arial</span>
-              </div>
-            </div><!-- /toolbar-submenu -->
-
-          </div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-font-family">Font</div>
-
-          <div class="gt-separator"></div>
-
-          <div id="toolbar-fontcolor" class="gt-button" style="background-image: url(icons/text-color.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div>
-
-          <div id="toolbar-bold" class="gt-button"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-bold">Bold</div>
-
-          <div id="toolbar-italics" class="gt-button"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-italics">Italics</div>
-
-          <div id="toolbar-underline" class="gt-button"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-underline">Underline</div>
-
-          <div id="toolbar-strikethrough" class="gt-button" style="background-image: url(icons/text-strikethrough.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Strikethrough</div>
-
-          <div id="toolbar-charspacing" class="gt-button" style="background-image: url(icons/char-spacing.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-charspacing">Letter spacing</div>
-
-          <div id="toolbar-lineheight" class="gt-button" style="background-image: url(icons/lineheight.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-lineheight">Line height</div>
-
-          <div class="gt-separator"></div>
-
-          <div id="toolbar-alignleft" class="gt-button" style="background-image: url(icons/align-left.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignleft">Text-align Left</div>
-
-          <div id="toolbar-aligncenter" class="gt-button" style="background-image: url(icons/align-center.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligncenter">Text-align Center</div>
-
-          <div id="toolbar-alignright" class="gt-button" style="background-image: url(icons/align-right.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignright">Text-align Right</div>
-
-          <div id="toolbar-alignjustify" class="gt-button" style="background-image: url(icons/align-justify.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
-
-          <div class="gt-separator"></div>
-
-          <div id="toolbar-aligntop" class="gt-button" style="background-image: url(icons/vertical-top.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
-
-          <div id="toolbar-alignmiddle" class="gt-button" style="background-image: url(icons/vertical-middle.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
-
-          <div id="toolbar-alignbottom" class="gt-button" style="background-image: url(icons/vertical-bottom.png);"></div>
-          <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
-        </div><!-- tool for textbox -->
-
-        <div v-show="imageObject">
-
-        </div><!-- tool for image -->
-
-      </div><!-- /toolbar for specific object -->
-
-
-      <div style="width:100%; float:left; position: relative;">
-        <div style="width:70%; float:left; position: relative; overflow: auto;">
-          <div style="position:relative;width:800px;float:left;border-right: 1px solid #aaa;margin: 15px; background: url(assets/images/graph-image.gif) repeat" id="canvas-wrapper" tabindex="1" v-on:click="canvasClick">
-            <canvas id="c-layout" width="800" height="420" ></canvas>
-          </div>
         </div>
-        <div style="width:30%; float:left; position: relative;">
-          <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="hasData">
-          </div>
-          <div id="monitor" style="max-height:500px; overflow-y:auto;">
-          </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-font-family">Font</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-fontcolor" class="gt-button" style="background-image: url(icons/text-color.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div>
+
+        <div id="toolbar-bold" class="gt-button"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-bold">Bold</div>
+
+        <div id="toolbar-italics" class="gt-button"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-italics">Italics</div>
+
+        <div id="toolbar-underline" class="gt-button"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-underline">Underline</div>
+
+        <div id="toolbar-strikethrough" class="gt-button" style="background-image: url(icons/text-strikethrough.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Strikethrough</div>
+
+        <div id="toolbar-charspacing" class="gt-button" style="background-image: url(icons/char-spacing.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-charspacing">Letter spacing</div>
+
+        <div id="toolbar-lineheight" class="gt-button" style="background-image: url(icons/lineheight.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-lineheight">Line height</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-alignleft" class="gt-button" style="background-image: url(icons/align-left.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignleft">Text-align Left</div>
+
+        <div id="toolbar-aligncenter" class="gt-button" style="background-image: url(icons/align-center.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligncenter">Text-align Center</div>
+
+        <div id="toolbar-alignright" class="gt-button" style="background-image: url(icons/align-right.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignright">Text-align Right</div>
+
+        <div id="toolbar-alignjustify" class="gt-button" style="background-image: url(icons/align-justify.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-aligntop" class="gt-button" style="background-image: url(icons/vertical-top.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
+
+        <div id="toolbar-alignmiddle" class="gt-button" style="background-image: url(icons/vertical-middle.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
+
+        <div id="toolbar-alignbottom" class="gt-button" style="background-image: url(icons/vertical-bottom.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
+      </div><!-- tool for textbox -->
+
+      <div v-show="imageObject">
+
+      </div><!-- tool for image -->
+    </div><!-- /toolbar for specific object -->
+
+    <div style="width:100%; float:left; position: relative;">
+      <div style="width:70%; float:left; position: relative; overflow: auto;">
+        <div style="position:relative;width:800px;float:left;border-right: 1px solid #aaa;margin: 15px; background: url(assets/images/graph-image.gif) repeat" id="canvas-wrapper" tabindex="1" v-on:click="canvasClick">
+          <canvas id="c-layout" width="800" height="420" ></canvas>
         </div>
+      </div>
+      <div style="width:30%; float:left; position: relative;">
+        <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="hasData">
+        </div>
+        <div id="monitor" style="max-height:500px; overflow-y:auto;">
+        </div>
+      </div>
+    </div><!-- layout canvas : canvas-wrapper -->
+  </div>
 
-      </div><!-- layout canvas : canvas-wrapper -->
-
-
-    </div>
-
-  </template>
-  <script>
+</template>
+<script>
 function setAttr(name, value, ob) {
   ob.toObject = (function (toObject) {
     return function () {
@@ -301,46 +287,46 @@ function setAttr(name, value, ob) {
     };
   })(ob.toObject);
 }
-  export default {
-    name: 'app',
-    data () {
-      return {
-        consoleJSON: window.consoleJSON,
-        fabricJSON: window.fabricJSON,
-        objectSelected: false,
-        textObject: false,
-        imageObject: false,
+export default {
+  name: 'app',
+  data () {
+    return {
+      consoleJSON: window.consoleJSON,
+      fabricJSON: window.fabricJSON,
+      objectSelected: false,
+      textObject: false,
+      imageObject: false,
 
-        hasData: false,
-        activeObject : {},
-        msg: 'Welcome to Your Vue.js App',
+      hasData: false,
+      activeObject : {},
+      msg: 'Welcome to Your Vue.js App',
 
-        movement: {
-          lockX: 'Lock Horizonal',
-          lockMovementX: false,
-          lockY: 'Lock Vertical',
-          lockMovementY: false
-        }, 
-        scale: {
-          lockScalingX: false,
-          lockScalingY: false,
-          toResize: true
-        }
+      movement: {
+        lockX: 'Lock Horizonal',
+        lockMovementX: false,
+        lockY: 'Lock Vertical',
+        lockMovementY: false
+      }, 
+      scale: {
+        lockScalingX: false,
+        lockScalingY: false,
+        toResize: true
+      }
+    }
+  },
+  methods: {
+    setAttr: function (name ,  value) {
+      if (!this.activeObject) {
+        this.activeObject.toObject = (function (toObject) {
+          return function () {
+            return fabric.util.object.extend(toObject.call(this), {
+              [name]: value
+            });
+          };
+        })(this.activeObject.toObject);
       }
     },
-    methods: {
-      setAttr: function (name ,  value) {
-        if (!this.activeObject) {
-          this.activeObject.toObject = (function (toObject) {
-            return function () {
-              return fabric.util.object.extend(toObject.call(this), {
-                [name]: value
-              });
-            };
-          })(this.activeObject.toObject);
-        }
-      },
-      canvasClick: function () {
+    canvasClick: function () {
         //console.log(Gtoolbar);
         this.activeObject = window.wcanvas.getActiveObject();
         this.textObject = false;
@@ -352,7 +338,7 @@ function setAttr(name, value, ob) {
           return;
         }
         
-        if ('data' in this.activeObject) {
+        if ('data' in window.wcanvas.getActiveObject()) {
           this.hasData = true;
         }
 
@@ -361,6 +347,7 @@ function setAttr(name, value, ob) {
         if (this.activeObject.type == 'image') this.imageObject = true;
 
         window.editor.set(JSON.parse(JSON.stringify(this.activeObject)));
+        console.log(this.activeObject.data);
       },
       newData: function() {
         if (this.activeObject.data) {

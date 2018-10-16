@@ -3,18 +3,391 @@
 <head>
   <meta charset="utf-8">
   <title>Fabric Editor</title>
-  <link rel="stylesheet" href="assets/css/material.indigo-pink.min.css">
-  <link rel='stylesheet' href='assets/css/colpick.css' />
-  <link href="assets/css/jsoneditor.min.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="assets/css/material.indigo-pink.min.css">
+  <link rel="stylesheet" type="text/css" href='assets/css/colpick.css' />
+  <link rel="stylesheet" type="text/css" href="assets/css/jsoneditor.min.css">
   <link rel="stylesheet" type="text/css" href="assets/css/gToolbars-0.2.0.css">
   <link rel="stylesheet" type="text/css" href="assets/css/main.css">
-
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <script src="assets/js/fabric.js"></script>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <div class="gt-toolbar">
+
+      <div id="toolbar-undo" class="gt-button"></div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-undo">Undo</div>
+
+      <div id="toolbar-redo" class="gt-button"></div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-redo">Redo</div>
+
+      <div class="gt-separator"></div>
+
+      <div  class="gt-button gt-dropdown" style="background-image: url(icons/insert-text.png);">
+        <div class="gt-arrow"></div>
+
+        <div class="gt-submenu gt-noselect gt-noshow">
+          <div class="gt-submenu-item" id="toolbar-text">
+            Pure textbox
+          </div>
+          <div class="gt-submenu-item" id="toolbar-datatext">
+            Data textbox
+          </div>
+        </div><!-- /toolbar-submenu -->
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-text">Insert Text</div>
+
+      <div id="toolbar-shape" class="gt-button gt-dropdown">
+        <div class="gt-arrow"></div>
+
+        <div class="gt-submenu gt-noselect gt-noshow">
+          <div class="gt-submenu-item" id="toolbar-circle">
+            <img src="icons/circle.png" class="gt-submenu-icon">
+            Circle
+          </div>
+          <div class="gt-submenu-item" id="toolbar-rectangle">
+            <img src="icons/rectangle.png" class="gt-submenu-icon">
+            Rectangle
+          </div>
+        </div><!-- /toolbar-submenu -->
+      </div><!-- /toolbar-shape -->
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-shape">Insert Shape</div>
+
+      <div  class="gt-button gt-dropdown" style="background-image: url(icons/new-image.png);">
+        <div class="gt-arrow"></div>
+        <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="toolbar-send-backward">
+              New Image
+            </div>
+            <div class="gt-submenu-item" id="toolbar-dataimage" data-text="data+image">
+              New data image
+            </div>
+          </div><!-- /toolbar-submenu -->
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Insert Image</div>
+
+      <div  class="gt-button gt-dropdown" style="background-image: url(icons/new-image-filled.png);">
+        <div class="gt-arrow"></div>
+        <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="change-background-image">
+              Change background image
+            </div>
+            <div class="gt-submenu-item" id="image-to-background">
+              Image to background
+            </div>
+            <div class="gt-submenu-item" id="delete-background-image" v-show="hasBackgroundImage">
+              Delete background image
+            </div>
+          </div><!-- /toolbar-submenu -->
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Image background</div>
+
+      <div  class="gt-button gt-dropdown" style="background-image: url(icons/user.png);">
+        <div class="gt-arrow"></div>
+        <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="profile-image">
+              Profile image
+            </div>
+            
+          </div><!-- /toolbar-submenu -->
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">User functions</div>
+
+      <div  class="gt-button gt-dropdown" style="background-image: url(icons/user-friend.png);">
+        <div class="gt-arrow"></div>
+        <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="photo_fb_friend_random">
+              Photo_fb Friend random
+            </div>
+            
+          </div><!-- /toolbar-submenu -->
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Friend function</div>
+
+      <div class="gt-separator"></div>
+
+      <div v-show="objectSelected">
+        <div id="toolbar-arrange" class="gt-button gt-dropdown" >
+          <span class="gt-title">Arrange</span>
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="toolbar-send-backward">
+              <img src="icons/send-backward.png" class="gt-submenu-icon">
+              Send Backward
+            </div>
+            <div class="gt-submenu-item" id="toolbar-bring-forward">
+              <img src="icons/bring-forward.png" class="gt-submenu-icon">
+              Bring Forward
+            </div>
+          </div><!-- /toolbar-submenu -->
+        </div>
+
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-arrange">Arrange Objects</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-movement" class="gt-button gt-dropdown" style="background-image: url(icons/movement.png);">
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-noshow">
+
+            <div v-bind:class="{ 'gt-button-active': movement.lockMovementX }" class="gt-submenu-item" id="toolbar-verticalmovement" action="lock">
+              {{ movement.lockX }} Movement
+            </div>
+            <div v-bind:class="{ 'gt-button-active': movement.lockMovementY }" class="gt-submenu-item" id="toolbar-horizonalmovement" action="lock">
+              {{ movement.lockY }} Movement
+            </div>
+          </div><!-- /toolbar-submenu -->
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-movement">Object Movement</div>
+
+        <div id="toolbar-scaling" class="gt-button gt-dropdown" style="background-image: url(icons/scaling.png);">
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-noshow">
+
+            <div v-bind:class="{ 'gt-button-active': scale.lockScalingX }" class="gt-submenu-item" id="toolbar-verticalscaling">
+              Lock Vertical Scaling
+            </div>
+            <div v-bind:class="{ 'gt-button-active': scale.lockScalingY }" class="gt-submenu-item" id="toolbar-horizonalscaling">
+              Lock Horizonal Scaling
+            </div>
+            
+            <div v-bind:class="{ 'gt-button-active': scale.toResize }" class="gt-submenu-item" id="toolbar-scaletoresize">
+              Scale to Resize
+            </div>
+          </div><!-- /toolbar-submenu -->
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-scaling">Object scaling</div>
+
+        <div id="toolbar-rotation" class="gt-button gt-dropdown" style="background-image: url(icons/rotation.png);">
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="toolbar-lockrotation">
+              Lock Rotation
+            </div>
+            <div class="gt-submenu-item" id="toolbar-lockrotation-flip" action="lock">
+              Lock Rotation Flip
+            </div>
+          </div><!-- /toolbar-submenu -->
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-rotation">Rotation</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-fill-color" class="gt-button gt-dropdown">
+          <div class="gt-arrow"></div>
+          <div class="gt-submenu gt-noshow">
+            <input type="text" id="color-picker"/>
+          </div>
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fill-color">Fill Color</div>
+
+        <div id="toolbar-backgroundcolor" class="gt-button gt-dropdown" style="background-image: url(icons/background-color.png);">
+          <div class="gt-arrow"></div>
+          <div class="gt-submenu gt-noshow">
+            <input type="text" id="background-color-picker"/>
+          </div>
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-backgroundcolor">Background Color</div>
+
+        <div id="toolbar-border" class="gt-button gt-dropdown" style="background-image: url(icons/border.png);">
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-noshow">
+            <div class="gt-submenu-item" id="toolbar-strokecolor">
+              <img src="icons/fill-color.png" class="gt-submenu-icon">
+              Color
+            </div>
+            <div class="gt-submenu-item" id="toolbar-strokewidth">
+              <img src="icons/Stroke-width.png" class="gt-submenu-icon">
+              Width
+            </div>
+          </div><!-- /toolbar-submenu -->
+        </div><!-- /toolbar-border -->
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-border">Stroke</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-gradient" class="gt-button" style="background-image: url(icons/gradient.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-gradient">Gradient</div>
+
+        <div id="toolbar-shadow" class="gt-button" style="background-image: url(icons/shadow.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-shadow">Shadow</div>
+
+        <div id="toolbar-radius" class="gt-button" style="background-image: url(icons/radius.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-radius">Radius</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-newdata" class="gt-button" style="background-image: url(icons/data-new.png);" v-show="hasData === false"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-newdata">Add Data to Object</div>
+        <div id="toolbar-deletedata" class="gt-button" style="background-image: url(icons/data-delete.png);" v-show="hasData"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-deletedata">Delete data in Object</div>
+        <div class="gt-separator"></div>
+      </div>
+
+
+      <div id="toolbar-effects" class="gt-button gt-dropdown">
+        <div class="gt-arrow"></div>
+        <div class="gt-submenu gt-noselect gt-noshow gt-no-auto-close">
+          <p>You can put anything <br/> you want in here.</p>
+        </div>
+      </div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-effects">Effects</div>
+    </div><!-- /toolbar common object -->
+
+    <div class="gt-toolbar">
+      <div v-show="textObject">
+        <div id="toolbar-font-size" class="gt-button gt-input gt-dropdown" style="width: 80px;">
+          <img src="icons/text-size.png" class="gt-submenu-icon" style="float: left; margin: 6px 0 0 0;">
+          <input type="text" id="font-size" maxlength="3" value="12" class="gt-text-input gt-title gt-autoupdate" style="float: none;">
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
+            <div class="gt-submenu-item">
+              <span>10</span>
+            </div>
+            <div class="gt-submenu-item gt-default">
+              <span>12</span>
+            </div>
+            <div class="gt-submenu-item">
+              <span>14</span>
+            </div>
+          </div><!-- /toolbar-submenu -->
+
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-font-size">Font Size</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-font-family" class="gt-button gt-dropdown gt-noselect">
+          <span class="gt-title gt-autoupdate" id="current-font"></span>
+          <div class="gt-arrow"></div>
+
+          <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
+            <div class="gt-submenu-item">
+              <span>Tahoma</span>
+            </div>
+            <div class="gt-submenu-item gt-default">
+              <span>Arial</span>
+            </div>
+          </div><!-- /toolbar-submenu -->
+
+        </div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-font-family">Font</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-fontcolor" class="gt-button" style="background-image: url(icons/text-color.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div>
+
+        <div id="toolbar-bold" class="gt-button"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-bold">Bold</div>
+
+        <div id="toolbar-italics" class="gt-button"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-italics">Italics</div>
+
+        <div id="toolbar-underline" class="gt-button"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-underline">Underline</div>
+
+        <div id="toolbar-strikethrough" class="gt-button" style="background-image: url(icons/text-strikethrough.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Strikethrough</div>
+
+        <div id="toolbar-charspacing" class="gt-button" style="background-image: url(icons/char-spacing.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-charspacing">Letter spacing</div>
+
+        <div id="toolbar-lineheight" class="gt-button" style="background-image: url(icons/lineheight.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-lineheight">Line height</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-alignleft" class="gt-button" style="background-image: url(icons/align-left.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignleft">Text-align Left</div>
+
+        <div id="toolbar-aligncenter" class="gt-button" style="background-image: url(icons/align-center.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligncenter">Text-align Center</div>
+
+        <div id="toolbar-alignright" class="gt-button" style="background-image: url(icons/align-right.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignright">Text-align Right</div>
+
+        <div id="toolbar-alignjustify" class="gt-button" style="background-image: url(icons/align-justify.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
+
+        <div class="gt-separator"></div>
+
+        <div id="toolbar-aligntop" class="gt-button" style="background-image: url(icons/vertical-top.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
+
+        <div id="toolbar-alignmiddle" class="gt-button" style="background-image: url(icons/vertical-middle.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
+
+        <div id="toolbar-alignbottom" class="gt-button" style="background-image: url(icons/vertical-bottom.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
+      </div><!-- tool for textbox -->
+
+      <div v-show="imageObject">
+
+      </div><!-- tool for image -->
+    </div><!-- /toolbar for specific object -->
+
+    <div style="width:100%; float:left; position: relative;">
+      <div style="width:70%; float:left; position: relative; overflow: auto;">
+        <div style="position:relative;width:800px;float:left;border-right: 1px solid #aaa;margin: 15px; background: url(assets/images/graph-image.gif) repeat" id="canvas-wrapper" tabindex="1">
+          <canvas id="c-layout" width="800" height="420" ></canvas>
+        </div>
+      </div>
+      <div style="width:30%; float:left; position: relative;">
+        <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="hasData">
+          <div v-show="dataText">
+            <select id="" v-on:change="argument">
+              <option value="random">By random</option>
+              <option value="gender">By gender</option>
+              <div class="input-button-group" v-on:click="addDataItem">
+                <span></span>
+              </div>
+            </select>
+            <div id="randomContent" v-show="randomContent">
+              <div class="form-group">
+                <textarea name="" id="" cols="30" rows="10" class="form-control" v-on:change="changeDataItem"></textarea>
+                <div class="input-button-group" v-on:click="deleteItem">
+                  <span></span>
+                </div>
+              </div>
+            </div>
+            <div v-show="genderContent">
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#male">Male</a></li>
+                <li><a data-toggle="tab" href="#female">Female</a></li>
+                <li><a data-toggle="tab" href="#common">Common</a></li>
+              </ul>
+              <div class="tab-content">
+                <div id="male" class="tab-pane fade in active">
+                  
+                </div>
+                <div id="female" class="tab-pane fade">
+                  
+                </div>
+                <div id="common" class="tab-pane fade">
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-show="dataImage">
+            
+          </div>
+        </div>
+        <div id="monitor" style="max-height:500px; overflow-y:auto;">
+        </div>
+      </div>
+    </div><!-- layout canvas : canvas-wrapper -->
+  </div>
 
   <script src="assets/js/jquery-3.3.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script defer src="assets/js/gToolbars-0.2.0.js"></script>
   <script defer src="assets/js/material.min.js"></script>
   <script defer src="assets/js/colpick.js"></script>
@@ -22,8 +395,8 @@
   <script src="assets/js/utils.js"></script>
   <script>
 
-    window.consoleJSON = '{"version":"2.3.6","objects":[]}';
-    window.fabricJSON = JSON.parse(consoleJSON);
+    var consoleJSON = '{"version":"2.3.6","objects":[]}';
+    var fabricJSON = JSON.parse(consoleJSON);
     console.log(fabricJSON);
     var state = [consoleJSON];
 

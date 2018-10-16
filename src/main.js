@@ -1,9 +1,39 @@
 import Vue from 'vue'
-import App from './App.vue'
+
 
 var canvasLayout = new Vue({
 	el: '#app',
-	render: h => h(App),
+	data: {
+
+		consoleJSON: consoleJSON,
+		fabricJSON: fabricJSON,
+		objectSelected: false,
+		textObject: false,
+		imageObject: false,
+
+		hasData: false,
+		dataText: false,
+		dataImageUpload: false,
+		dataPhotoFb: false,
+		
+		hasBackgroundImage: false,
+		activeObject : {},
+		msg: 'Welcome to Your Vue.js App',
+
+		movement: {
+			lockMovementX: false,
+			lockMovementY: false
+		}, 
+		scale: {
+			lockScalingX: false,
+			lockScalingY: false,
+			toResize: true
+		}
+	},
+	methods: {
+		
+	}
+
 });
 
 // json editor js created
@@ -18,12 +48,17 @@ var options = {
 		}
 	},*/
 	onChangeText: function (json) {
-		
+
 		var activeObject = canvas.getActiveObject();
+		activeObject = JSON.parse(JSON.stringify(activeObject));
 		json = JSON.parse(json);
-		for (var key in json) {
+		for (var key in activeObject) {
 			if (json.hasOwnProperty(key) && activeObject[key] != json[key]) {
-				activeObject.set(key, json[key]);
+				canvas.getActiveObject().set(key, json[key]);
+			} else {
+				if (!(json.hasOwnProperty(key))) {
+					delete canvas.getActiveObject()[key];
+				}
 			}
 		}
 		canvas.renderAll();
@@ -31,11 +66,10 @@ var options = {
 	}
 };
 var container = document.getElementById("monitor");
-window.editor = new JSONEditor(container , options);
+var editor = new JSONEditor(container , options);
 
 // canvas fabric js created
 var canvas = new fabric.Canvas('c-layout');
-window.wcanvas = canvas;
 canvas.selectionColor = 'rgba(0,255,0,0.2)';
 canvas.selectionBorderColor = 'red';
 canvas.selectionLineWidth = 1;
@@ -189,51 +223,72 @@ var Direction = {
 	RIGHT: 2,
 	DOWN: 3
 };
+fabric.util.addListener(document.getElementById('canvas-wrapper'), 'click', function (options) {
+	console.log('object selected');
+	var activeObject = canvas.getActiveObject();
+	canvasLayout.textObject = false;
+	canvasLayout.imageObject = false;
+	canvasLayout.hasData = false;
+	canvasLayout.objectSelected = false;
+	if (!activeObject) {
+		editor.set({});
+		return;
+	}
+
+	if (activeObject.data && activeObject.data.arg != null) {
+		console.log('object has Data.');
+		canvasLayout.hasData = true;
+	}
+
+	canvasLayout.activeObject = activeObject;
+	canvasLayout.objectSelected = true;
+	if (activeObject.type == 'textbox') canvasLayout.textObject = true;
+	if (activeObject.type == 'image') canvasLayout.imageObject = true;
+	editor.set(JSON.parse(JSON.stringify(activeObject)));
+});
+
 fabric.util.addListener(document.getElementById('canvas-wrapper'), 'keydown', function (options) {
 
 	options.preventDefault();
-        /*if (options.repeat) {
-            return;
-        }*/
-        STEP = ($("#step-key").val() > 0) ? parseInt($("#step-key").val()) : 1;
-        var key = options.which || options.keyCode; // key detection
-        if (key === 37) { // handle Left key
-        	moveSelected(Direction.LEFT);
-        } else if (key === 38) { // handle Up key
-        	moveSelected(Direction.UP);
-        } else if (key === 39) { // handle Right key
-        	moveSelected(Direction.RIGHT);
-        } else if (key === 40) { // handle Down key
-        	moveSelected(Direction.DOWN);
-        } else if (key === 46) {
-        	var activeObjects = canvas.getActiveObjects();
-        	canvas.discardActiveObject()
-        	if (activeObjects.length) {
-        		canvas.remove.apply(canvas, activeObjects);
-        	}
-        }
-        
-        if (key == 90 && options.ctrlKey) {
-        	console.log('Ctrl + z pressed.');
-        	undo();
-        }
-        if (key == 89 && options.ctrlKey) {
-        	console.log('Ctrl + y pressed.');
-        	redo();
-        }
+	STEP = ($("#step-key").val() > 0) ? parseInt($("#step-key").val()) : 1;
+	var key = options.which || options.keyCode;
+	if (key === 37) {
+		moveSelected(Direction.LEFT);
+	} else if (key === 38) {
+		moveSelected(Direction.UP);
+	} else if (key === 39) {
+		moveSelected(Direction.RIGHT);
+	} else if (key === 40) {
+		moveSelected(Direction.DOWN);
+	} else if (key === 46) {
+		var activeObjects = canvas.getActiveObjects();
+		canvas.discardActiveObject()
+		if (activeObjects.length) {
+			canvas.remove.apply(canvas, activeObjects);
+		}
+	}
 
-        if (key == 67 && options.ctrlKey) {
-        	console.log('Ctrl + c pressed.');
-        	copy();
-        }
-        if (key == 86 && options.ctrlKey) {
-        	console.log('Ctrl + v pressed.');
-        	paste();
-        	onObjectModified();
-        }
-        
+	if (key == 90 && options.ctrlKey) {
+		console.log('Ctrl + z pressed.');
+		undo();
+	}
+	if (key == 89 && options.ctrlKey) {
+		console.log('Ctrl + y pressed.');
+		redo();
+	}
 
-    });
+	if (key == 67 && options.ctrlKey) {
+		console.log('Ctrl + c pressed.');
+		copy();
+	}
+	if (key == 86 && options.ctrlKey) {
+		console.log('Ctrl + v pressed.');
+		paste();
+		onObjectModified();
+	}
+
+
+});
 
 function moveSelected(direction) {
 	var activeObject = canvas.getActiveObject();
@@ -319,8 +374,8 @@ function renderVieportBorders() {
 function saveJson() {
 	canvas.toJSON(['selectable' , 'evented' , 'data' , 'isbackground']);
 
-	window.consoleJSON = JSON.stringify(canvas);
-	fabricJSON = JSON.parse(window.consoleJSON);
+	consoleJSON = JSON.stringify(canvas);
+	fabricJSON = JSON.parse(consoleJSON);
 
 }
 function loadJson(json) {
@@ -460,6 +515,40 @@ $(function() {
 		});
 		canvas.add(newtext);
 	});
+	registerButton($('#toolbar-datatext'), function() {
+		var dataText = new fabric.Textbox('data textbox', {
+			fontSize: 20,
+			left: getRandomInt(0, 100),
+			top: getRandomInt(0, 100),
+			fontFamily: 'helvetica',
+			angle: 0,
+			fill: '#000000',
+			scaleX: 1,
+			scaleY: 1,
+			fontWeight: '',
+			originX: 'left',
+			width: 300,
+			hasRotatingPoint: true,
+			centerTransform: true,
+			data: {
+                arg: 'random',
+                text: [{
+                    type: '',
+                    content: 'Data text'
+                }]
+            }
+		});
+		this.data = dataText.data;
+        dataText.toObject = (function (toObject) {
+            return function () {
+                return fabric.util.object.extend(toObject.call(this), {
+                    data: dataText.data
+                });
+            };
+        })(dataText.toObject);
+		canvas.add(dataText);
+		canvas.setActiveObject(dataText);
+	});
 	registerButton($('#toolbar-new-image'), function() {
 		fabric.Image.fromURL('https://via.placeholder.com/100?text=image', function (img) {
 			img.set({
@@ -471,6 +560,31 @@ $(function() {
 			.scale(1)
 			.setCoords();
 			canvas.add(img);
+		});
+	});
+	registerButton($('#toolbar-dataimage'), function(event, data = {arg:"random",filter:"",image:[{type:"",content:"url-image"}]}, text = $(this).data('text')) {
+		console.log(data);
+        fabric.Image.fromURL('https://via.placeholder.com/100?text='+text, function (img) {
+            img.set({
+                    left: 0,
+                    top: 0,
+                    width: 100,
+                    height: 100,
+                    data: data
+                })
+                .scale(1)
+                .setCoords();
+
+                img.toObject = (function (toObject) {
+                  return function () {
+                    return fabric.util.object.extend(toObject.call(this), {
+                      data: data
+                    });
+                  };
+                })(img.toObject);
+            canvas.add(img);
+            canvas.setActiveObject(img);
+		
 		});
 	});
 	registerButton($("#toolbar-undo"), function() {
@@ -553,7 +667,33 @@ $(function() {
 
 	// data object
 	registerButton($("#toolbar-newdata"), function() {
-		
+		var activeObject = canvas.getActiveObject();
+		if ('data' in activeObject) {
+			alert('object already have data');
+		} else {
+			if (activeObject.type == 'textbox') {
+				var data = {
+					arg: 'random',
+					text: [{
+						type: '',
+						content: 'Data text'
+					}]
+				};
+			}
+			if (activeObject.type == 'image') {
+				var data = {
+					arg: "random",
+					filter: "",
+					image: [{
+						type: "",
+						content: "url-image"
+					}] 
+				};
+			}
+			canvasLayout.hasData = true;
+			setAttr('data' , data , activeObject);
+			editor.set(JSON.parse(JSON.stringify(activeObject)));
+		}
 	});
 	registerButton($("#toolbar-editdata"), function() {
 
@@ -561,25 +701,6 @@ $(function() {
 	registerButton($("#toolbar-deletedata"), function() {
 
 	});
-
-	
-
-	// end common tool
-	// textbox editor tool
-	
-	// end textbox editor tool
-
-	registerToggleButton($("#toolbar-bold"), function() {
-            // set strong font weight
-        }, function() {
-            // set normal font weight
-        });
-
-	$("#toggle-bold").click(function() {
-		toggle($("#toolbar-bold"), true);
-	});
-
-
 
 	/* --- color picker --- */
 	$("#color-picker").colpick({
@@ -606,5 +727,20 @@ $(function() {
 			setActiveProp('backgroundColor', '#'+hex);
 		}
 	});
+
+	// end common tool
+	// textbox editor tool
+	registerToggleButton($("#toolbar-bold"), function() {
+            // set strong font weight
+        }, function() {
+            // set normal font weight
+        });
+
+	$("#toggle-bold").click(function() {
+		toggle($("#toolbar-bold"), true);
+	});
+	// end textbox editor tool
+
+	
 
 });

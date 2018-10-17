@@ -12,9 +12,10 @@ var canvasLayout = new Vue({
 		imageObject: false,
 
 		hasData: false,
-		dataText: false,
-		dataImageUpload: false,
-		dataPhotoFb: false,
+		dataType: '',
+		argument: 'random',
+		curGender: 'male',
+		items: [],
 		
 		hasBackgroundImage: false,
 		activeObject : {},
@@ -31,7 +32,46 @@ var canvasLayout = new Vue({
 		}
 	},
 	methods: {
-		
+		changeGender: function(val) {
+			this.curGender = val;
+		},
+		addItem: function() {
+			var contentText = '';
+			if (this.activeObject.type == 'textbox') {
+				contentText = 'Data Text';
+			}
+			if (this.activeObject.type == 'image') {
+				contentText = 'Image URL';
+			}
+
+			if (this.argument == 'random') {
+					this.items.push({type:'' , content: contentText});
+				}
+
+				if (this.argument == 'gender') {
+					this.items.push({type: this.curGender , content: contentText});
+				}
+			this.changeItem();
+		},
+		changeItem: function() {
+			var data = this.activeObject.data;
+			if (data.arg != this.argument) {
+				this.items = [];
+			}
+			data.arg = this.argument;
+			if (this.activeObject.type == 'textbox') {
+				data.text = this.items;
+			}
+			if (this.activeObject.type == 'image') {
+				data.image = this.items;
+			}
+			setAttr('data' , data , this.activeObject);
+		},
+		deleteItem: function(ind) {
+			delete this.items[ind];
+			this.changeItem();
+		},
+
 	}
 
 });
@@ -238,12 +278,21 @@ fabric.util.addListener(document.getElementById('canvas-wrapper'), 'click', func
 	if (activeObject.data && activeObject.data.arg != null) {
 		console.log('object has Data.');
 		canvasLayout.hasData = true;
+		canvasLayout.argument = activeObject.data.arg;
 	}
 
 	canvasLayout.activeObject = activeObject;
 	canvasLayout.objectSelected = true;
-	if (activeObject.type == 'textbox') canvasLayout.textObject = true;
-	if (activeObject.type == 'image') canvasLayout.imageObject = true;
+	if (activeObject.type == 'textbox') {
+		canvasLayout.textObject = true;
+		canvasLayout.dataType = 'data-text';
+		canvasLayout.items = activeObject.data.text;
+	}
+	if (activeObject.type == 'image') {
+		canvasLayout.imageObject = true;
+		canvasLayout.dataType = 'data-image';
+		canvasLayout.items = activeObject.data.image;
+	}
 	editor.set(JSON.parse(JSON.stringify(activeObject)));
 });
 

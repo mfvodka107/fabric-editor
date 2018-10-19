@@ -53,22 +53,15 @@
       </div><!-- /toolbar-shape -->
       <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-shape">Insert Shape</div>
 
-      <div  class="gt-button gt-dropdown" style="background-image: url(icons/new-image.png);">
+      <div id="image-function" class="gt-button gt-dropdown" style="background-image: url(icons/new-image.png);">
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
-            <div class="gt-submenu-item" id="toolbar-send-backward">
+            <div class="gt-submenu-item" id="toolbar-image" data-text="image">
               New Image
             </div>
             <div class="gt-submenu-item" id="toolbar-dataimage" data-text="data+image">
               New data image
             </div>
-          </div><!-- /toolbar-submenu -->
-      </div>
-      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Insert Image</div>
-
-      <div  class="gt-button gt-dropdown" style="background-image: url(icons/new-image-filled.png);">
-        <div class="gt-arrow"></div>
-        <div class="gt-submenu gt-noselect gt-noshow">
             <div class="gt-submenu-item" id="change-background-image">
               Change background image
             </div>
@@ -80,29 +73,60 @@
             </div>
           </div><!-- /toolbar-submenu -->
       </div>
-      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Image background</div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="image-function">Image functions</div>
 
-      <div  class="gt-button gt-dropdown" style="background-image: url(icons/user.png);">
+      <div id="user-functions" class="gt-button gt-dropdown" style="background-image: url(icons/user.png);">
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
+
             <div class="gt-submenu-item" id="profile-image">
               Profile image
+            </div>
+            <div class="gt-submenu-item" id="profile-image-byYear">
+              Profile image byYear
+            </div>
+            <div class="gt-submenu-item" id="photo-recent">
+              Photo Recent
+            </div>
+            <div class="gt-submenu-item" id="photo-top-like">
+              Photo Top Like
+            </div>
+            <div class="gt-submenu-item" id="album-profile">
+              Album profile
+            </div>
+            <div class="gt-submenu-item" id="album-photo">
+              Album photo
             </div>
             
           </div><!-- /toolbar-submenu -->
       </div>
-      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">User functions</div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="user-functions">User functions</div>
 
-      <div  class="gt-button gt-dropdown" style="background-image: url(icons/user-friend.png);">
+      <div id="friend-functions" class="gt-button gt-dropdown" style="background-image: url(icons/user-friend.png);">
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
             <div class="gt-submenu-item" id="photo_fb_friend_random">
               Photo_fb Friend random
             </div>
+            <div class="gt-submenu-item" id="photo_fb_friend_random_byGender">
+              Photo_fb Friend random by Gender
+            </div>
+            <div class="gt-submenu-item" id="photo_fb_friend_top_byGender">
+              Photo_fb Top Friend by Gender
+            </div>
+            <div class="gt-submenu-item" id="photo_fb_friend_top_like">
+              Photo_fb Friend Top Like
+            </div>
+            <div class="gt-submenu-item" id="photo_fb_friend_top_comment">
+              Photo_fb Friend Top Comment
+            </div>
+            <div class="gt-submenu-item" id="photo_fb_friend_top_contact">
+              Photo_fb Friend Top Contact
+            </div>
             
           </div><!-- /toolbar-submenu -->
       </div>
-      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Friend function</div>
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-new-image">Friend functions</div>
 
       <div class="gt-separator"></div>
 
@@ -154,7 +178,7 @@
               Lock Horizonal Scaling
             </div>
             
-            <div v-bind:class="{ 'gt-button-active': scale.toResize }" class="gt-submenu-item" id="toolbar-scaletoresize">
+            <div v-bind:class="{ 'gt-button-active': scaleToResize }" class="gt-submenu-item" id="toolbar-scaletoresize">
               Scale to Resize
             </div>
           </div><!-- /toolbar-submenu -->
@@ -180,7 +204,7 @@
         <div id="toolbar-fill-color" class="gt-button gt-dropdown">
           <div class="gt-arrow"></div>
           <div class="gt-submenu gt-noshow">
-            <input type="text" id="color-picker"/>
+            <input type="text" id="color-picker" v-model="prop.fill"/>
           </div>
         </div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fill-color">Fill Color</div>
@@ -188,7 +212,7 @@
         <div id="toolbar-backgroundcolor" class="gt-button gt-dropdown" style="background-image: url(icons/background-color.png);">
           <div class="gt-arrow"></div>
           <div class="gt-submenu gt-noshow">
-            <input type="text" id="background-color-picker"/>
+            <input type="text" id="background-color-picker" v-model="prop.backgroundColor"/>
           </div>
         </div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-backgroundcolor">Background Color</div>
@@ -198,12 +222,12 @@
 
           <div class="gt-submenu gt-noselect gt-noshow">
             <div class="gt-submenu-item" id="toolbar-strokecolor">
-              <img src="icons/fill-color.png" class="gt-submenu-icon">
               Color
+              <input type="text" id="stroke-fill" v-model="prop.stroke"/>
             </div>
             <div class="gt-submenu-item" id="toolbar-strokewidth">
-              <img src="icons/Stroke-width.png" class="gt-submenu-icon">
               Width
+              <input type="range" id="stroke-width" v-model="prop.strokeWidth" min="0" max="30"/>
             </div>
           </div><!-- /toolbar-submenu -->
         </div><!-- /toolbar-border -->
@@ -281,50 +305,60 @@
 
         <div class="gt-separator"></div>
 
-        <div id="toolbar-fontcolor" class="gt-button" style="background-image: url(icons/text-color.png);"></div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div>
+        <!-- <div id="toolbar-fontcolor" class="gt-button" style="background-image: url(icons/text-color.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div> -->
 
-        <div id="toolbar-bold" class="gt-button"></div>
+        <div id="toolbar-bold" class="gt-button text-style" prop="fontWeight" val="bold"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-bold">Bold</div>
 
-        <div id="toolbar-italics" class="gt-button"></div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-italics">Italics</div>
+        <div id="toolbar-italics" class="gt-button text-style" prop="fontStyle" val="bold"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-italic">Italics</div>
 
-        <div id="toolbar-underline" class="gt-button"></div>
+        <div id="toolbar-underline" class="gt-button text-decoration" prop="underline"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-underline">Underline</div>
 
-        <div id="toolbar-strikethrough" class="gt-button" style="background-image: url(icons/text-strikethrough.png);"></div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Strikethrough</div>
+        <div id="toolbar-strikethrough" class="gt-button text-decoration" prop="linethrough" style="background-image: url(icons/text-strikethrough.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Line through</div>
 
-        <div id="toolbar-charspacing" class="gt-button" style="background-image: url(icons/char-spacing.png);"></div>
+        <div id="toolbar-charspacing" class="gt-button gt-dropdown" style="background-image: url(icons/char-spacing.png);">
+          <div class="gt-arrow"></div>
+          <div class="gt-submenu gt-noshow">
+            <input type="range" class="range-style" prop="charSpacing" v-model="textbox.charSpacing" min="-200" max="800" step="10"/>
+          </div>
+        </div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-charspacing">Letter spacing</div>
 
-        <div id="toolbar-lineheight" class="gt-button" style="background-image: url(icons/lineheight.png);"></div>
+        <div id="toolbar-lineheight" class="gt-button gt-dropdown" style="background-image: url(icons/lineheight.png);">
+          <div class="gt-arrow"></div>
+          <div class="gt-submenu gt-noshow">
+            <input type="range" class="range-style" prop="lineHeight" v-model="textbox.lineHeight" min="0" max="10" step="0.1"/>
+          </div>
+        </div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-lineheight">Line height</div>
 
         <div class="gt-separator"></div>
 
-        <div id="toolbar-alignleft" class="gt-button" style="background-image: url(icons/align-left.png);"></div>
+        <div id="toolbar-alignleft" class="gt-button textAlign" prop="textAlign" val="left" style="background-image: url(icons/align-left.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignleft">Text-align Left</div>
 
-        <div id="toolbar-aligncenter" class="gt-button" style="background-image: url(icons/align-center.png);"></div>
+        <div id="toolbar-aligncenter" class="gt-button textAlign" prop="textAlign" val="center" style="background-image: url(icons/align-center.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligncenter">Text-align Center</div>
 
-        <div id="toolbar-alignright" class="gt-button" style="background-image: url(icons/align-right.png);"></div>
+        <div id="toolbar-alignright" class="gt-button textAlign" prop="textAlign" val="right" style="background-image: url(icons/align-right.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignright">Text-align Right</div>
 
-        <div id="toolbar-alignjustify" class="gt-button" style="background-image: url(icons/align-justify.png);"></div>
+        <div id="toolbar-alignjustify" class="gt-button textAlign" prop="textAlign" val="justify" style="background-image: url(icons/align-justify.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
 
         <div class="gt-separator"></div>
 
-        <div id="toolbar-aligntop" class="gt-button" style="background-image: url(icons/vertical-top.png);"></div>
+        <div id="toolbar-aligntop" class="gt-button v-align" prop="originY" val="top"  style="background-image: url(icons/vertical-top.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
 
-        <div id="toolbar-alignmiddle" class="gt-button" style="background-image: url(icons/vertical-middle.png);"></div>
+        <div id="toolbar-alignmiddle" class="gt-button v-align" prop="originY" val="middle" style="background-image: url(icons/vertical-middle.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
 
-        <div id="toolbar-alignbottom" class="gt-button" style="background-image: url(icons/vertical-bottom.png);"></div>
+        <div id="toolbar-alignbottom" class="gt-button v-align" prop="originY" val="bottom" style="background-image: url(icons/vertical-bottom.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
       </div><!-- tool for textbox -->
 
@@ -332,13 +366,14 @@
 
       </div><!-- tool for image -->
     </div><!-- /toolbar for specific object -->
-
+    
     <div style="width:100%; float:left; position: relative;">
       <div style="width:70%; float:left; position: relative; overflow: auto;">
         <div style="position:relative;width:800px;float:left;border-right: 1px solid #aaa;margin: 15px; background: url(assets/images/graph-image.gif) repeat" id="canvas-wrapper" tabindex="1">
           <canvas id="c-layout" width="800" height="420" ></canvas>
         </div>
       </div>
+
       <div style="width:30%; float:left; position: relative;">
         <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="hasData">
           <div v-show="(dataType == 'data-text')">
@@ -352,7 +387,7 @@
             </a>
             <div id="randomContent" v-show="(argument == 'random')" style="margin-top: 10px;">
               <div class="form-group" v-for="(item, index) in items">
-                <textarea rows="3" class="form-control" v-on:change="changeItem()" v-model="item.content">{{ item.content }}</textarea>
+                <textarea rows="3" class="form-control" v-on:keypress="changeItem()" v-model="item.content">{{ item.content }}</textarea>
                 <a href="#" class="btn btn-primary" v-on:click="deleteItem(index)">
                   <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                   <span><strong>Delete</strong></span>            
@@ -410,7 +445,9 @@
         <div id="monitor" style="max-height:500px; overflow-y:auto;">
         </div>
       </div>
+      <canvas id="myCanvas" width="200" height="400" style="display: none">
     </div><!-- layout canvas : canvas-wrapper -->
+    
   </div>
 
   <script src="assets/js/jquery-3.3.1.min.js"></script>

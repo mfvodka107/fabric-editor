@@ -1,6 +1,5 @@
 import Vue from 'vue'
 
-
 var canvasLayout = new Vue({
 	el: '#app',
 	data: {
@@ -25,10 +24,36 @@ var canvasLayout = new Vue({
 			lockMovementX: false,
 			lockMovementY: false
 		}, 
+		scaleToResize: true,
 		scale: {
 			lockScalingX: false,
-			lockScalingY: false,
-			toResize: true
+			lockScalingY: false
+		},
+		prop: {
+			originY: 'top',
+			opacity: 1,
+			fill: '#000000',
+			backgroundColor: '',
+			stroke: null,
+			strokeWidth: 0,
+			shadow: null
+		},
+		textbox : {
+			fontSize: 20,
+			fontWeight: '',
+			fontFamily: 'helvetica',
+			fontStyle: 'normal',
+			underline: false,
+			overline: false,
+			linethrough: false,
+			textAlign: 'left',
+			textBackgroundColor: '',
+			charSpacing: 0,
+			lineHeight: 1.16
+		},
+		image: {
+			src: '',
+
 		}
 	},
 	methods: {
@@ -45,12 +70,12 @@ var canvasLayout = new Vue({
 			}
 
 			if (this.argument == 'random') {
-					this.items.push({type:'' , content: contentText});
-				}
+				this.items.push({type:'' , content: contentText});
+			}
 
-				if (this.argument == 'gender') {
-					this.items.push({type: this.curGender , content: contentText});
-				}
+			if (this.argument == 'gender') {
+				this.items.push({type: this.curGender , content: contentText});
+			}
 			this.changeItem();
 		},
 		changeItem: function() {
@@ -94,7 +119,9 @@ var options = {
 		json = JSON.parse(json);
 		for (var key in activeObject) {
 			if (json.hasOwnProperty(key) && activeObject[key] != json[key]) {
-				canvas.getActiveObject().set(key, json[key]);
+				console.log("Change ["+key+"] to value :"+json[key])
+				canvas.getActiveObject().set(key, json[key]).setCoords();
+				setAttr(key , json[key] , canvas.getActiveObject());
 			} else {
 				if (!(json.hasOwnProperty(key))) {
 					delete canvas.getActiveObject()[key];
@@ -113,6 +140,7 @@ var canvas = new fabric.Canvas('c-layout');
 canvas.selectionColor = 'rgba(0,255,0,0.2)';
 canvas.selectionBorderColor = 'red';
 canvas.selectionLineWidth = 1;
+fabric.Object.prototype.objectCaching = false;
 
 var viewportLeft = 0,
 viewportTop = 0,
@@ -134,75 +162,19 @@ canvas.on('object:selected', function (opt) {
 	if (target._cacheCanvas) {
 
 	}
+	
 })
 
-canvas.on('mouse:wheel', function (opt) {
-	var e = opt.e;
-	if (!e.ctrlKey) {
-		return;
-	}
-	var newZoom = canvas.getZoom() + e.deltaY / 300;
-	canvas.zoomToPoint({
-		x: e.offsetX,
-		y: e.offsetY
-	}, newZoom);
-
-	renderVieportBorders();
-	e.preventDefault();
-	return false;
-});
-
-
-canvas.on('mouse:down', function (options) {
-	if (options.e.altKey) {
-		isDown = true;
-
-		viewportLeft = canvas.viewportTransform[4];
-		viewportTop = canvas.viewportTransform[5];
-
-		mouseLeft = options.e.x;
-		mouseTop = options.e.y;
-		_drawSelection = canvas._drawSelection;
-		canvas._drawSelection = function () {};
-		renderVieportBorders();
-	}
-});
-
-canvas.on('mouse:move', function (options) {
-	if (options.e.altKey && isDown) {
-		var currentMouseLeft = options.e.x;
-		var currentMouseTop = options.e.y;
-
-		var deltaLeft = currentMouseLeft - mouseLeft,
-		deltaTop = currentMouseTop - mouseTop;
-
-		canvas.viewportTransform[4] = viewportLeft + deltaLeft;
-		canvas.viewportTransform[5] = viewportTop + deltaTop;
-
-		canvas.renderAll();
-		renderVieportBorders();
-	}
-});
-
-canvas.on('mouse:up', function () {
-	canvas._drawSelection = _drawSelection;
-	isDown = false;
-});
 canvas.on(  'object:modified', onObjectModified,
 	'object:added', function () {
 		canvas.counter++;
 		updateModifications(true);
+
 	});
 
 canvas.on('object:scaling', function(e) {
-	console.log('object scaling');
-	var toResize = true;
-	canvasLayout.$watch('scale.toResize' , function (newValue, oldValue) {
-		if (newValue !== toResize) {
-			toResize = newValue;
-		}
-	});
-
+	var toResize = canvasLayout.scaleToResize;
+	console.log("Object Scaling . %cScale to Resize : " + canvasLayout.scaleToResize , "color :red" );
 	if (toResize) {
 		if (e.target.type === 'group') {
 			var groupScaleX = e.target.scaleX;
@@ -214,6 +186,7 @@ canvas.on('object:scaling', function(e) {
 		} else {
 			e.target.resizeToScale();
 		}
+		editor.set(JSON.parse(JSON.stringify(canvas.getActiveObject())));
 	}
 
 });
@@ -248,11 +221,8 @@ fabric.Object.prototype.resizeToScale = function(scaleX, scaleY, belongsToGroup)
 		}
 		break;
 	}
-	if (this.type == 'image') {
-		console.log('Thay đổi kích cỡ ...' + this.width + 'x' + this.height);
-		changeImgSrc(this , this.width , this.height);
-		canvas.renderAll();
-	}
+
+	canvas.renderAll();
 
 };
 var STEP = 1;
@@ -264,7 +234,7 @@ var Direction = {
 	DOWN: 3
 };
 fabric.util.addListener(document.getElementById('canvas-wrapper'), 'click', function (options) {
-	console.log('object selected');
+	console.log("%cCanvas clicked", "color: yellow; font-style: italic;");
 	var activeObject = canvas.getActiveObject();
 	canvasLayout.textObject = false;
 	canvasLayout.imageObject = false;
@@ -275,23 +245,36 @@ fabric.util.addListener(document.getElementById('canvas-wrapper'), 'click', func
 		return;
 	}
 
-	if (activeObject.data && activeObject.data.arg != null) {
-		console.log('object has Data.');
+	if ('data' in activeObject && activeObject.data && activeObject.data.arg != null) {
+		console.log("%cActive Object has data", "color: #4b8eff; font-style: Bold;");
 		canvasLayout.hasData = true;
 		canvasLayout.argument = activeObject.data.arg;
 	}
 
 	canvasLayout.activeObject = activeObject;
 	canvasLayout.objectSelected = true;
+	
 	if (activeObject.type == 'textbox') {
 		canvasLayout.textObject = true;
 		canvasLayout.dataType = 'data-text';
-		canvasLayout.items = activeObject.data.text;
+		if ('data' in activeObject && activeObject.data) {
+			canvasLayout.items = activeObject.data.text;
+		}
 	}
+
 	if (activeObject.type == 'image') {
 		canvasLayout.imageObject = true;
 		canvasLayout.dataType = 'data-image';
-		canvasLayout.items = activeObject.data.image;
+		if ('data' in activeObject && activeObject.data) {
+			canvasLayout.items = activeObject.data.image;
+		}
+	}
+
+	for (var key in canvasLayout.prop) {
+		canvasLayout.prop[key] = activeObject[key];
+	}
+	for (var key in canvasLayout[activeObject.type]) {
+		canvasLayout.prop[key] = activeObject[key];
 	}
 	editor.set(JSON.parse(JSON.stringify(activeObject)));
 });
@@ -299,21 +282,24 @@ fabric.util.addListener(document.getElementById('canvas-wrapper'), 'click', func
 fabric.util.addListener(document.getElementById('canvas-wrapper'), 'keydown', function (options) {
 
 	options.preventDefault();
-	STEP = ($("#step-key").val() > 0) ? parseInt($("#step-key").val()) : 1;
-	var key = options.which || options.keyCode;
-	if (key === 37) {
-		moveSelected(Direction.LEFT);
-	} else if (key === 38) {
-		moveSelected(Direction.UP);
-	} else if (key === 39) {
-		moveSelected(Direction.RIGHT);
-	} else if (key === 40) {
-		moveSelected(Direction.DOWN);
-	} else if (key === 46) {
-		var activeObjects = canvas.getActiveObjects();
-		canvas.discardActiveObject()
-		if (activeObjects.length) {
-			canvas.remove.apply(canvas, activeObjects);
+	var activeObject = canvas.getActiveObject();
+	if (activeObject) {
+		STEP = ($("#step-key").val() > 0) ? parseInt($("#step-key").val()) : 1;
+		var key = options.which || options.keyCode;
+		if (key === 37) {
+			moveSelected(Direction.LEFT);
+		} else if (key === 38) {
+			moveSelected(Direction.UP);
+		} else if (key === 39) {
+			moveSelected(Direction.RIGHT);
+		} else if (key === 40) {
+			moveSelected(Direction.DOWN);
+		} else if (key === 46) {
+			var activeObjects = canvas.getActiveObjects();
+			canvas.discardActiveObject()
+			if (activeObjects.length) {
+				canvas.remove.apply(canvas, activeObjects);
+			}
 		}
 	}
 
@@ -368,28 +354,46 @@ function moveSelected(direction) {
 
 }
 
-function changeImgSrc(activeObject, obWidth, obHeight) {
-	var img = new Image();
-	img.onload = function() {
-		activeObject.setElement(img);
-	}
-	var image_text = 'image';
-	if ('data' in activeObject && activeObject.data.arg == 'profile') {
-		var image_text = 'profile+avatar';
-		if ('year' in activeObject.data) {
-			var image_text = 'avatar+'+activeObject.data.year;
-		}
-	}
-	if ('data' in activeObject && 'image' in activeObject.data) {
-		var image_text = 'data+image';
-	}
+function getActiveStyle(styleName, object) {
+    object = object || canvas.getActiveObject();
+    if (!object) return '';
 
-	if ('data' in activeObject && activeObject.data.arg == 'photoFb') {
-		var image_text = 'photo+fb+'+activeObject.data.byType;
-	}
+    return (object.getSelectionStyles && object.isEditing) ?
+    (object.getSelectionStyles()[styleName] || '') :
+    (object[styleName] || '');
+};
 
-	console.log('change image src ...' + 'https://via.placeholder.com/' + obWidth + 'x' + obHeight + '?text=' + image_text);
-	img.src = 'https://via.placeholder.com/' + obWidth + 'x' + obHeight + '?text=' + image_text;
+function setActiveStyle(styleName, value, object) {
+    //console.log(object);
+    object = object || canvas.getActiveObject();
+    if (!object) return;
+
+    if (object.setSelectionStyles && object.isEditing) {
+        var style = {};
+        style[styleName] = value;
+        object.setSelectionStyles(style);
+        object.setCoords();
+    } else {
+        object.set(styleName, value);
+    }
+
+    object.setCoords();
+    canvas.requestRenderAll();
+};
+
+function getActiveProp(name) {
+    var object = canvas.getActiveObject();
+    if (!object) return '';
+
+    return object[name] || '';
+}
+
+function setActiveProp(name, value) {
+    var object = canvas.getActiveObject();
+    if (!object) return;
+    object.set(name, value).setCoords();
+    canvas.renderAll();
+    setAttr(name , value , object);
 }
 
 function setAttr(name, value, ob) {
@@ -544,8 +548,46 @@ function setActiveProp(name, value) {
 	canvas.renderAll();
 }
 
+function addImage(imageName , data = {arg:"random",filter:"",image:[{type:"",content:"url-image"}]} ) {
+	var coord = getRandomLeftTop();
+
+	var image = new Image();
+	var canvas1 = document.getElementById("myCanvas");
+	var ctx = canvas1.getContext("2d");
+	ctx.font = "30px Arial";
+	var imgText = imageName.split(' ');
+	console.log(imgText);
+	for (var i = 0; i < imgText.length; i++) {
+		var dis = 40 + 30*i;
+		ctx.fillText(imgText[i],10,dis);
+	}
+
+	image.src = canvas1.toDataURL();
+
+	var img = new fabric.Image(image, {
+		left: 0,
+		top: 0,
+		width: 100,
+		height: 100,
+		backgroundColor: '#' + getRandomColor(),
+		data: data,
+	}).scale(1).setCoords();
+	img.toObject = (function (toObject) {
+		return function () {
+			return fabric.util.object.extend(toObject.call(this), {
+				data: this.data
+			});
+		};
+	})(img.toObject);
+	canvas.add(img);
+	canvas.setActiveObject(img);
+	ctx.clearRect(0, 0, canvas1.width, canvas1.height);
+	setActiveProp('transparentCorners', true);
+}
+
 // register and create function for gtoolbar button
 $(function() {
+	$(".jsoneditor-tree").css({"max-height":"400px"})
 	registerButton($('#toolbar-text'), function() {
 		var newtext = new fabric.Textbox('new textbox', {
 			fontSize: 20,
@@ -580,21 +622,21 @@ $(function() {
 			hasRotatingPoint: true,
 			centerTransform: true,
 			data: {
-                arg: 'random',
-                text: [{
-                    type: '',
-                    content: 'Data text'
-                }]
-            }
+				arg: 'random',
+				text: [{
+					type: '',
+					content: 'Data text'
+				}]
+			}
 		});
 		this.data = dataText.data;
-        dataText.toObject = (function (toObject) {
-            return function () {
-                return fabric.util.object.extend(toObject.call(this), {
-                    data: dataText.data
-                });
-            };
-        })(dataText.toObject);
+		dataText.toObject = (function (toObject) {
+			return function () {
+				return fabric.util.object.extend(toObject.call(this), {
+					data: dataText.data
+				});
+			};
+		})(dataText.toObject);
 		canvas.add(dataText);
 		canvas.setActiveObject(dataText);
 	});
@@ -611,31 +653,15 @@ $(function() {
 			canvas.add(img);
 		});
 	});
-	registerButton($('#toolbar-dataimage'), function(event, data = {arg:"random",filter:"",image:[{type:"",content:"url-image"}]}, text = $(this).data('text')) {
-		console.log(data);
-        fabric.Image.fromURL('https://via.placeholder.com/100?text='+text, function (img) {
-            img.set({
-                    left: 0,
-                    top: 0,
-                    width: 100,
-                    height: 100,
-                    data: data
-                })
-                .scale(1)
-                .setCoords();
-
-                img.toObject = (function (toObject) {
-                  return function () {
-                    return fabric.util.object.extend(toObject.call(this), {
-                      data: data
-                    });
-                  };
-                })(img.toObject);
-            canvas.add(img);
-            canvas.setActiveObject(img);
-		
-		});
+	registerButton($('#toolbar-dataimage'), function(event) {
+		addImage('Data image')
 	});
+
+	registerButton($('#profile-image'), function() {
+		var data = {arg: "profile",filter: ""};
+        addImage('Avatar' , data);
+	});
+
 	registerButton($("#toolbar-undo"), function() {
 		undo();
 	});
@@ -696,9 +722,12 @@ $(function() {
 		setActiveProp('lockScalingY', false);
 	});
 	registerToggleButton($("#toolbar-scaletoresize"), function() {
-		canvasLayout.$data.scale.toRezise = true;
+		console.log("Change scaleToResize to true");
+		canvasLayout.scaleToResize = true;
 	}, function() {
-		canvasLayout.$data.scale.toRezise = false;
+		console.log("Change scaleToResize to false");
+		canvasLayout.scaleToRezise = false;
+		console.log(canvasLayout.scaleToRezise)
 	});
 
 
@@ -744,11 +773,15 @@ $(function() {
 			editor.set(JSON.parse(JSON.stringify(activeObject)));
 		}
 	});
-	registerButton($("#toolbar-editdata"), function() {
+	/*registerButton($("#toolbar-editdata"), function() {
 
-	});
+	});*/
 	registerButton($("#toolbar-deletedata"), function() {
-
+		delete canvas.getActiveObject()['data'];
+		canvas.renderAll();
+		saveJson();
+		canvasLayout.hasData = false;
+		editor.set(JSON.parse(JSON.stringify(activeObject)));
 	});
 
 	/* --- color picker --- */
@@ -780,16 +813,95 @@ $(function() {
 	// end common tool
 	// textbox editor tool
 	registerToggleButton($("#toolbar-bold"), function() {
-            // set strong font weight
+            setActiveStyle('fontWeight' , 'bold');
         }, function() {
-            // set normal font weight
+            setActiveStyle('fontWeight' , '');
         });
 
-	$("#toggle-bold").click(function() {
-		toggle($("#toolbar-bold"), true);
+	registerToggleButton($("#toolbar-italics"), function() {
+            
+        }, function() {
+            
+        });
+	registerToggleButton($("#toolbar-underline"), function() {
+            
+        }, function() {
+            
+        });
+	registerToggleButton($("#toolbar-strikethrough"), function() {
+            
+        }, function() {
+            
+        });
+	registerToggleButton($("#toolbar-alignleft"), function() {
+            
+        }, function() {
+            
+        });
+	$(document).on('change', '.range-style', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+		canvasLayout.textbox[$(this).attr('prop')] = $(this).val();
+		setActiveStyle($(this).attr('prop') , $(this).val());
 	});
 	// end textbox editor tool
 
-	
-
 });
+
+(function(global) {
+
+  function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  function pad(str, length) {
+    while (str.length < length) {
+      str = '0' + str;
+    }
+    return str;
+  }
+
+  var getRandomInt = fabric.util.getRandomInt;
+  function getRandomColor() {
+    return (
+      pad(getRandomInt(0, 255).toString(16), 2) +
+      pad(getRandomInt(0, 255).toString(16), 2) +
+      pad(getRandomInt(0, 255).toString(16), 2)
+    );
+  }
+
+  function getRandomNum(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function getRandomLeftTop() {
+    var offset = 50;
+    return {
+      left: fabric.util.getRandomInt(0 + offset, 700 - offset),
+      top: fabric.util.getRandomInt(0 + offset, 500 - offset)
+    };
+  }
+
+  var supportsInputOfType = function(type) {
+    return function() {
+      var el = document.createElement('input');
+      try {
+        el.type = type;
+      }
+      catch(err) { }
+      return el.type === type;
+    };
+  };
+
+  var supportsSlider = supportsInputOfType('range'),
+      supportsColorpicker = supportsInputOfType('color');
+
+  global.getRandomNum = getRandomNum;
+  global.getRandomInt = getRandomInt;
+  global.getRandomColor = getRandomColor;
+  global.getRandomLeftTop = getRandomLeftTop;
+  global.supportsSlider = supportsSlider;
+  global.supportsColorpicker = supportsColorpicker;
+  global.capitalize = capitalize;
+
+})(this);

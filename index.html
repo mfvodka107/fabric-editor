@@ -267,7 +267,7 @@
       <div v-show="textObject">
         <div id="toolbar-font-size" class="gt-button gt-input gt-dropdown" style="width: 80px;">
           <img src="icons/text-size.png" class="gt-submenu-icon" style="float: left; margin: 6px 0 0 0;">
-          <input type="text" id="font-size" maxlength="3" value="12" class="gt-text-input gt-title gt-autoupdate" style="float: none;">
+          <input type="text" id="font-size" maxlength="3" class="gt-text-input gt-title gt-autoupdate" style="float: none;" v-model="textbox.fontSize">
           <div class="gt-arrow"></div>
 
           <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
@@ -288,7 +288,8 @@
         <div class="gt-separator"></div>
 
         <div id="toolbar-font-family" class="gt-button gt-dropdown gt-noselect">
-          <span class="gt-title gt-autoupdate" id="current-font"></span>
+          <input type="text" id="current-font" class="gt-text-input gt-title gt-autoupdate" style="float: none;width: 100%" v-model="textbox.fontFamily" v-on:change="changeProp()">
+        
           <div class="gt-arrow"></div>
 
           <div class="gt-submenu gt-noselect gt-scrolling gt-noshow">
@@ -308,16 +309,16 @@
         <!-- <div id="toolbar-fontcolor" class="gt-button" style="background-image: url(icons/text-color.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-fontcolor">Font Color</div> -->
 
-        <div id="toolbar-bold" class="gt-button text-style" prop="fontWeight" val="bold"></div>
+        <div id="toolbar-bold" class="gt-button text-style" v-bind:class="{ 'gt-button-active': (textbox.fontWeight == 'bold') }" prop="fontWeight" val="bold"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-bold">Bold</div>
 
-        <div id="toolbar-italics" class="gt-button text-style" prop="fontStyle" val="bold"></div>
+        <div id="toolbar-italics" class="gt-button text-style" v-bind:class="{ 'gt-button-active': (textbox.fontStyle == 'italic') }" prop="fontStyle" val="italic"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-italic">Italics</div>
 
-        <div id="toolbar-underline" class="gt-button text-decoration" prop="underline"></div>
+        <div id="toolbar-underline" class="gt-button text-decoration" v-bind:class="{ 'gt-button-active': (textbox.underline) }" prop="underline"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-underline">Underline</div>
 
-        <div id="toolbar-strikethrough" class="gt-button text-decoration" prop="linethrough" style="background-image: url(icons/text-strikethrough.png);"></div>
+        <div id="toolbar-strikethrough" class="gt-button text-decoration" v-bind:class="{ 'gt-button-active': (textbox.linethrough) }" prop="linethrough" style="background-image: url(icons/text-strikethrough.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-strikethrough">Line through</div>
 
         <div id="toolbar-charspacing" class="gt-button gt-dropdown" style="background-image: url(icons/char-spacing.png);">
@@ -338,27 +339,27 @@
 
         <div class="gt-separator"></div>
 
-        <div id="toolbar-alignleft" class="gt-button textAlign" prop="textAlign" val="left" style="background-image: url(icons/align-left.png);"></div>
+        <div id="toolbar-alignleft" class="gt-button textAlign" v-bind:class="{ 'gt-button-active': (textbox.textAlign == 'left') }" prop="textAlign" val="left" style="background-image: url(icons/align-left.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignleft">Text-align Left</div>
 
-        <div id="toolbar-aligncenter" class="gt-button textAlign" prop="textAlign" val="center" style="background-image: url(icons/align-center.png);"></div>
+        <div id="toolbar-aligncenter" class="gt-button textAlign" v-bind:class="{ 'gt-button-active': (textbox.textAlign == 'center') }" prop="textAlign" val="center" style="background-image: url(icons/align-center.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligncenter">Text-align Center</div>
 
-        <div id="toolbar-alignright" class="gt-button textAlign" prop="textAlign" val="right" style="background-image: url(icons/align-right.png);"></div>
+        <div id="toolbar-alignright" class="gt-button textAlign" v-bind:class="{ 'gt-button-active': (textbox.textAlign == 'right') }" prop="textAlign" val="right" style="background-image: url(icons/align-right.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignright">Text-align Right</div>
 
-        <div id="toolbar-alignjustify" class="gt-button textAlign" prop="textAlign" val="justify" style="background-image: url(icons/align-justify.png);"></div>
+        <div id="toolbar-alignjustify" class="gt-button textAlign" v-bind:class="{ 'gt-button-active': (textbox.textAlign == 'justify') }" prop="textAlign" val="justify" style="background-image: url(icons/align-justify.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
 
         <div class="gt-separator"></div>
 
-        <div id="toolbar-aligntop" class="gt-button v-align" prop="originY" val="top"  style="background-image: url(icons/vertical-top.png);"></div>
+        <div id="toolbar-aligntop" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'top') }" prop="originY" val="top"  style="background-image: url(icons/vertical-top.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
 
-        <div id="toolbar-alignmiddle" class="gt-button v-align" prop="originY" val="middle" style="background-image: url(icons/vertical-middle.png);"></div>
+        <div id="toolbar-alignmiddle" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'middle') }" prop="originY" val="middle" style="background-image: url(icons/vertical-middle.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
 
-        <div id="toolbar-alignbottom" class="gt-button v-align" prop="originY" val="bottom" style="background-image: url(icons/vertical-bottom.png);"></div>
+        <div id="toolbar-alignbottom" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'bottom') }" prop="originY" val="bottom" style="background-image: url(icons/vertical-bottom.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
       </div><!-- tool for textbox -->
 

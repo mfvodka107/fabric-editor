@@ -56,7 +56,18 @@ var canvasLayout = new Vue({
 
 		}
 	},
+	watch: {
+		'textbox.fontFamily': function(newVal, oldVal) {
+			setActiveProp('fontFamily' , newVal);
+		},
+		'textbox.fontSize': function(newVal, oldVal) {
+			setActiveProp('fontSize' , newVal);
+		}
+	},
 	methods: {
+		changeProp: function (prop , val) {
+			setActiveProp(prop , val);
+		},
 		changeGender: function(val) {
 			this.curGender = val;
 		},
@@ -274,7 +285,7 @@ fabric.util.addListener(document.getElementById('canvas-wrapper'), 'click', func
 		canvasLayout.prop[key] = activeObject[key];
 	}
 	for (var key in canvasLayout[activeObject.type]) {
-		canvasLayout.prop[key] = activeObject[key];
+		canvasLayout[activeObject.type][key] = activeObject[key];
 	}
 	editor.set(JSON.parse(JSON.stringify(activeObject)));
 });
@@ -587,6 +598,15 @@ function addImage(imageName , data = {arg:"random",filter:"",image:[{type:"",con
 
 // register and create function for gtoolbar button
 $(function() {
+	var activeBtn = function (btn) {
+		if (btn.hasClass("gt-button-active")) {
+			btn.removeClass("gt-button-active");
+			return 'deactive';
+		} else {
+			btn.addClass("gt-button-active");
+			return 'active';
+		}
+	}
 	$(".jsoneditor-tree").css({"max-height":"400px"})
 	registerButton($('#toolbar-text'), function() {
 		var newtext = new fabric.Textbox('new textbox', {
@@ -812,32 +832,41 @@ $(function() {
 
 	// end common tool
 	// textbox editor tool
-	registerToggleButton($("#toolbar-bold"), function() {
-            setActiveStyle('fontWeight' , 'bold');
-        }, function() {
-            setActiveStyle('fontWeight' , '');
-        });
+	$(document).on('click', '.text-style', function(event) {
+    	event.preventDefault();
+    	var status = activeBtn($(this));
+    	if (status == 'active') {
+    		setActiveStyle($(this).attr('prop'), $(this).attr('val'));
+    	}
+    	if (status == 'deactive') {
+    		setActiveStyle($(this).attr('prop'), '');
+    	}
+    });
 
-	registerToggleButton($("#toolbar-italics"), function() {
-            
-        }, function() {
-            
-        });
-	registerToggleButton($("#toolbar-underline"), function() {
-            
-        }, function() {
-            
-        });
-	registerToggleButton($("#toolbar-strikethrough"), function() {
-            
-        }, function() {
-            
-        });
-	registerToggleButton($("#toolbar-alignleft"), function() {
-            
-        }, function() {
-            
-        });
+    $(document).on('click', '.text-decoration', function(event) {
+    	event.preventDefault();
+    	var status = activeBtn($(this));
+    	if (status == 'active') {
+    		setActiveStyle($(this).attr('prop'), true);
+    	}
+    	if (status == 'deactive') {
+    		setActiveStyle($(this).attr('prop'), false);
+    	}
+    });
+
+    $(document).on('click', '.textAlign', function(event) {
+    	event.preventDefault();
+    	$('.textAlign').removeClass('gt-button-active');
+    	$(this).addClass('gt-button-active');
+    	setActiveStyle('textAlign', $(this).attr('val'));
+    });
+    $(document).on('click', '.v-align', function(event) {
+    	event.preventDefault();
+    	$('.v-align').removeClass('gt-button-active');
+    	$(this).addClass('gt-button-active');
+    	setActiveStyle('originY', $(this).attr('val'));
+    });
+
 	$(document).on('change', '.range-style', function(event) {
 		event.preventDefault();
 		/* Act on the event */

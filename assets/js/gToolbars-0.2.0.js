@@ -185,6 +185,8 @@ function updateTitle(element) {
   if (placeholder.is("div,span")) {
     placeholder.text(element.text().trim());
   } else if (placeholder.is("input")) {
+    
     placeholder.val(element.text().trim());
+    console.log(placeholder.val());
   }
 }

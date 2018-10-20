@@ -37,9 +37,9 @@
       </div>
       <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-text">Insert Text</div>
 
-      <div id="toolbar-shape" class="gt-button gt-dropdown">
+      <!-- <div id="toolbar-shape" class="gt-button gt-dropdown">
         <div class="gt-arrow"></div>
-
+      
         <div class="gt-submenu gt-noselect gt-noshow">
           <div class="gt-submenu-item" id="toolbar-circle">
             <img src="icons/circle.png" class="gt-submenu-icon">
@@ -49,18 +49,21 @@
             <img src="icons/rectangle.png" class="gt-submenu-icon">
             Rectangle
           </div>
-        </div><!-- /toolbar-submenu -->
-      </div><!-- /toolbar-shape -->
-      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-shape">Insert Shape</div>
+        </div>/toolbar-submenu
+      </div>/toolbar-shape
+      <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-shape">Insert Shape</div> -->
 
       <div id="image-function" class="gt-button gt-dropdown" style="background-image: url(icons/new-image.png);">
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
-            <div class="gt-submenu-item" id="toolbar-image" data-text="image">
+            <div class="gt-submenu-item" id="toolbar-image" data-title="image">
               New Image
             </div>
-            <div class="gt-submenu-item" id="toolbar-dataimage" data-text="data+image">
-              New data image
+            <div class="gt-submenu-item dataimage" data-title="data image" data-object="image_random">
+              New data image random
+            </div>
+            <div class="gt-submenu-item dataimage" data-title="data image byGender" data-object="image_byGender">
+              New data image by Gender
             </div>
             <div class="gt-submenu-item" id="change-background-image">
               Change background image
@@ -79,22 +82,22 @@
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
 
-            <div class="gt-submenu-item" id="profile-image">
+            <div class="gt-submenu-item fb-image" data-title="Avatar" data-object='profile' id="profile-image">
               Profile image
             </div>
-            <div class="gt-submenu-item" id="profile-image-byYear">
+            <div class="gt-submenu-item fb-image" data-title="Avatar by Year" data-object="photo_avatar_by_year" id="profile-image-byYear">
               Profile image byYear
             </div>
-            <div class="gt-submenu-item" id="photo-recent">
+            <div class="gt-submenu-item fb-image" data-title="Photo recent" data-object="photo_fb_recent" id="photo-recent">
               Photo Recent
             </div>
-            <div class="gt-submenu-item" id="photo-top-like">
+            <div class="gt-submenu-item fb-image" data-title="Photo Top Like" data-object="photo_fb_top_like" id="photo-top-like">
               Photo Top Like
             </div>
-            <div class="gt-submenu-item" id="album-profile">
+            <div class="gt-submenu-item fb-image" data-title="Album Profile" data-object="photo_fb_album_profile_random" id="album-profile">
               Album profile
             </div>
-            <div class="gt-submenu-item" id="album-photo">
+            <div class="gt-submenu-item fb-image" data-title="Album Photo" data-object="photo_fb_album_photo_random" id="album-photo">
               Album photo
             </div>
             
@@ -105,22 +108,22 @@
       <div id="friend-functions" class="gt-button gt-dropdown" style="background-image: url(icons/user-friend.png);">
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
-            <div class="gt-submenu-item" id="photo_fb_friend_random">
+            <div class="gt-submenu-item fb-image" data-title="Photo's Friend Random" data-object="photo_fb_friend_random" id="photo_fb_friend_random">
               Photo_fb Friend random
             </div>
-            <div class="gt-submenu-item" id="photo_fb_friend_random_byGender">
+            <div class="gt-submenu-item fb-image" data-title="Photo's Friend by Gender" data-object="photo_fb_friend_random_byGender" id="photo_fb_friend_random_byGender">
               Photo_fb Friend random by Gender
             </div>
-            <div class="gt-submenu-item" id="photo_fb_friend_top_byGender">
+            <div class="gt-submenu-item fb-image" data-title="Top Photo's Friend by Gender" data-object="photo_fb_friend_top_byGender" id="photo_fb_friend_top_byGender">
               Photo_fb Top Friend by Gender
             </div>
-            <div class="gt-submenu-item" id="photo_fb_friend_top_like">
+            <div class="gt-submenu-item fb-image" data-title="Photo's Friend have top like" data-object="photo_fb_friend_top_like" id="photo_fb_friend_top_like">
               Photo_fb Friend Top Like
             </div>
-            <div class="gt-submenu-item" id="photo_fb_friend_top_comment">
+            <div class="gt-submenu-item fb-image" data-title="Photo's Friend have top comment" data-object="photo_fb_friend_top_comment" id="photo_fb_friend_top_comment">
               Photo_fb Friend Top Comment
             </div>
-            <div class="gt-submenu-item" id="photo_fb_friend_top_contact">
+            <div class="gt-submenu-item fb-image" data-title="Photo's Friend have top Contact" data-object="photo_fb_friend_top_contact" id="photo_fb_friend_top_contact">
               Photo_fb Friend Top Contact
             </div>
             
@@ -251,6 +254,15 @@
         <div id="toolbar-deletedata" class="gt-button" style="background-image: url(icons/data-delete.png);" v-show="hasData"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-deletedata">Delete data in Object</div>
         <div class="gt-separator"></div>
+
+        <div id="toolbar-aligntop" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'top') }" prop="originY" val="top"  style="background-image: url(icons/vertical-top.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Vertical align Top</div>
+
+        <div id="toolbar-alignmiddle" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'center') }" prop="originY" val="center" style="background-image: url(icons/vertical-middle.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Vertical align Middle</div>
+
+        <div id="toolbar-alignbottom" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'bottom') }" prop="originY" val="bottom" style="background-image: url(icons/vertical-bottom.png);"></div>
+        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Vertical align Bottom</div>
       </div>
 
 
@@ -351,16 +363,7 @@
         <div id="toolbar-alignjustify" class="gt-button textAlign" v-bind:class="{ 'gt-button-active': (textbox.textAlign == 'justify') }" prop="textAlign" val="justify" style="background-image: url(icons/align-justify.png);"></div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignjustify">Text-align Justify</div>
 
-        <div class="gt-separator"></div>
-
-        <div id="toolbar-aligntop" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'top') }" prop="originY" val="top"  style="background-image: url(icons/vertical-top.png);"></div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-aligntop">Text-align Top</div>
-
-        <div id="toolbar-alignmiddle" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'middle') }" prop="originY" val="middle" style="background-image: url(icons/vertical-middle.png);"></div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignmiddle">Text-align Middle</div>
-
-        <div id="toolbar-alignbottom" class="gt-button v-align" v-bind:class="{ 'gt-button-active': (prop.originY == 'bottom') }" prop="originY" val="bottom" style="background-image: url(icons/vertical-bottom.png);"></div>
-        <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-alignbottom">Text-align Bottom</div>
+        
       </div><!-- tool for textbox -->
 
       <div v-show="imageObject">

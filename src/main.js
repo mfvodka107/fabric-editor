@@ -54,7 +54,24 @@ var canvasLayout = new Vue({
 		image: {
 			src: '',
 
+		},
+		stdData: {
+			image_random: {arg:"random",filter:"",image:[{type:"",content:"url-image"}]},
+			image_byGender: {arg:"gender",filter:"",image:[{type:"male",content:"url-image"}, {type:"female",content:"url-image"}, {type:"common",content:"url-image"}]},
+			profile: {arg: "profile", filter: ""},
+			photo_avatar_by_year: {arg: 'photo_avatar_by_year', byYear: '2018', filter: ''},
+			photo_fb_recent: {arg: 'photo_fb_recent', filter: '', num : 1 , unique: 'false'},
+			photo_fb_top_like: {arg: 'photo_fb_top_like', filter: '', num : 1 , unique: 'false'},
+			photo_fb_album_profile_random: {arg: 'photo_fb_album_profile_random', filter: '', num : 5 , unique: 'false'},
+			photo_fb_album_photo_random: {arg: 'photo_fb_album_photo_random', filter: '', num : 5 , unique: 'false'},
+			photo_fb_friend_random: {arg: 'photo_fb_friend_random', filter: '', num : 5 , unique: 'false'},
+			photo_fb_friend_random_byGender: {arg: 'photo_fb_friend_random_byGender', filter: '', num : 5 , unique: 'false', sex: 'same'},
+			photo_fb_friend_top_byGender: {arg: 'photo_fb_friend_top_byGender', filter: '', num : 1 , unique: 'false', sex: 'same'},
+			photo_fb_friend_top_like: {arg: 'photo_fb_friend_top_like', filter: '', num : 1 , unique: 'false'},
+			photo_fb_friend_top_comment: {arg: 'photo_fb_friend_top_comment', filter: '', num : 1 , unique: 'false'},
+			photo_fb_friend_top_contact: {arg: 'photo_fb_friend_top_contact', filter: '', num : 1, unique: 'false'},
 		}
+
 	},
 	watch: {
 		'textbox.fontFamily': function(newVal, oldVal) {
@@ -673,13 +690,15 @@ $(function() {
 			canvas.add(img);
 		});
 	});
-	registerButton($('#toolbar-dataimage'), function(event) {
-		addImage('Data image')
+	
+	$(document).on('click', '.dataimage', function(event) {
+		event.preventDefault();
+		addImage($(this).data('title') , canvasLayout.stdData[$(this).data('object')]);
 	});
-
-	registerButton($('#profile-image'), function() {
-		var data = {arg: "profile",filter: ""};
-        addImage('Avatar' , data);
+	$(document).on('click', '.fb-image', function(event) {
+		event.preventDefault();
+		/* Act on the event */
+        addImage($(this).data('title') , canvasLayout.stdData[$(this).data('object')]);
 	});
 
 	registerButton($("#toolbar-undo"), function() {

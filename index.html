@@ -56,6 +56,7 @@
       <div id="image-function" class="gt-button gt-dropdown" style="background-image: url(icons/new-image.png);">
         <div class="gt-arrow"></div>
         <div class="gt-submenu gt-noselect gt-noshow">
+          <input type="file" name="temp-image" id="temp-image" style="display: none;">
             <div class="gt-submenu-item" id="toolbar-image" data-title="image">
               New Image
             </div>
@@ -72,7 +73,7 @@
               Image to background
             </div>
             <div class="gt-submenu-item" id="delete-background-image" v-show="hasBackgroundImage">
-              Delete background image
+              Clear background image
             </div>
           </div><!-- /toolbar-submenu -->
       </div>
@@ -217,20 +218,29 @@
           <div class="gt-submenu gt-noshow">
             <input type="text" id="background-color-picker" v-model="prop.backgroundColor"/>
           </div>
+          <div class="gt-submenu gt-noshow">
+            
+          </div>
         </div>
         <div class="mdl-tooltip mdl-tooltip--large gt-noselect" for="toolbar-backgroundcolor">Background Color</div>
 
         <div id="toolbar-border" class="gt-button gt-dropdown" style="background-image: url(icons/border.png);">
           <div class="gt-arrow"></div>
 
-          <div class="gt-submenu gt-noselect gt-noshow">
+          <div class="gt-submenu gt-noselect gt-noshow gt-no-auto-close">
             <div class="gt-submenu-item" id="toolbar-strokecolor">
-              Color
-              <input type="text" id="stroke-fill" v-model="prop.stroke"/>
+              <label for="">
+                Color
+                <input type="text" id="stroke-fill" v-model="prop.stroke"/>
+              </label>
+                
             </div>
-            <div class="gt-submenu-item" id="toolbar-strokewidth">
-              Width
-              <input type="range" id="stroke-width" v-model="prop.strokeWidth" min="0" max="30"/>
+            <div class="gt-submenu-item">
+              <label for="">
+                Width
+                <input type="range" class="range-style" prop="strokeWidth" data-object="prop" v-model="prop.strokeWidth" min="0" max="30"/>
+              </label>
+                
             </div>
           </div><!-- /toolbar-submenu -->
         </div><!-- /toolbar-border -->
@@ -335,7 +345,7 @@
 
         <div id="toolbar-charspacing" class="gt-button gt-dropdown" style="background-image: url(icons/char-spacing.png);">
           <div class="gt-arrow"></div>
-          <div class="gt-submenu gt-noshow">
+          <div class="gt-submenu gt-noselect gt-noshow gt-no-auto-close">
             <input type="range" class="range-style" prop="charSpacing" v-model="textbox.charSpacing" min="-200" max="800" step="10"/>
           </div>
         </div>
@@ -343,7 +353,7 @@
 
         <div id="toolbar-lineheight" class="gt-button gt-dropdown" style="background-image: url(icons/lineheight.png);">
           <div class="gt-arrow"></div>
-          <div class="gt-submenu gt-noshow">
+          <div class="gt-submenu gt-noselect gt-noshow gt-no-auto-close">
             <input type="range" class="range-style" prop="lineHeight" v-model="textbox.lineHeight" min="0" max="10" step="0.1"/>
           </div>
         </div>
@@ -379,7 +389,7 @@
       </div>
 
       <div style="width:30%; float:left; position: relative;">
-        <div style="border: 1px solid #aaa; margin: 15px;padding:10px;" id="data" v-show="hasData">
+        <div style="border: 1px solid #aaa; margin: 15px 0;padding:10px; max-height: 400px; overflow-y: auto;" id="data" v-show="hasData">
           <div v-show="(dataType == 'data-text')">
             <select id="" v-model="argument" v-on:change="changeItem()">
               <option value="random">By random</option>
@@ -442,8 +452,71 @@
               </div>
             </div>
           </div>
-          <div v-show="(dataType == 'data-text')">
-            
+          <div v-show="(dataType == 'data-image')">
+            <select id="" v-model="argument" v-on:change="changeItem()">
+              <option value="random">By random</option>
+              <option value="gender">By gender</option>
+            </select>
+            <a href="#" class="btn btn-primary btn-xs" v-on:click="addItem()">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              <span><strong>Add</strong></span>            
+            </a>
+            <div id="randomContent" v-show="(argument == 'random')" style="margin-top: 10px;">
+              <div class="form-group" v-for="(item, index) in items">
+                <input type="file" class="form-control file image-upload">
+                <textarea rows="3" class="form-control" v-on:keypress="changeItem()" v-model="item.content">{{ item.content }}</textarea>
+                <a href="#" class="btn btn-primary" v-on:click="deleteItem(index)">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                  <span><strong>Delete</strong></span>            
+                </a>
+              </div>
+            </div>
+            <div v-show="(argument == 'gender')">
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#male" v-on:click="changeGender('male')">Male</a></li>
+                <li><a data-toggle="tab" href="#female" v-on:click="changeGender('female')">Female</a></li>
+                <li><a data-toggle="tab" href="#common" v-on:click="changeGender('common')">Common</a></li>
+              </ul>
+              <div class="tab-content">
+                <div id="male" class="tab-pane fade in active">
+                  <div class="form-group" v-for="(item, index) in items">
+                    <div v-if="item.type == 'male'">
+                      <input type="file" class="form-control file  image-upload">
+                      <textarea rows="3" class="form-control" v-on:change="changeItem()" v-model="item.content">{{ item.content }}</textarea>
+                      <a href="#" class="btn btn-primary" v-on:click="deleteItem(index)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        <span><strong>Delete</strong></span>            
+                      </a>
+                    </div>
+                      
+                  </div>
+                </div>
+                <div id="female" class="tab-pane fade">
+                  <div class="form-group" v-for="(item, index) in items">
+                    <div v-if="item.type == 'female'">
+                      <input type="file" class="form-control file image-upload">
+                      <textarea rows="3" class="form-control" v-on:change="changeItem()" v-model="item.content">{{ item.content }}</textarea>
+                      <a href="#" class="btn btn-primary" v-on:click="deleteItem(index)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        <span><strong>Delete</strong></span>            
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div id="common" class="tab-pane fade">
+                  <div class="form-group" v-for="(item, index) in items">
+                    <div v-if="item.type == 'common'">
+                      <input type="file" class="form-control file  image-upload">
+                      <textarea rows="3" class="form-control" v-on:change="changeItem()" v-model="item.content">{{ item.content }}</textarea>
+                      <a href="#" class="btn btn-primary" v-on:click="deleteItem(index)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        <span><strong>Delete</strong></span>            
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div id="monitor" style="max-height:500px; overflow-y:auto;">

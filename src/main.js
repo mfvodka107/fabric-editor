@@ -353,6 +353,39 @@ fabric.util.addListener(document.getElementById('canvas-wrapper'), 'keydown', fu
 
 });
 
+// function collection
+function handleFileSelect(evt) {
+	var files = evt.target.files;
+	for (var i = 0, f; f = files[i]; i++) {
+		if (!f.type.match('image.*')) {
+			continue;
+		}
+
+		var reader = new FileReader();
+		reader.onload = (function(theFile) {
+			return function(e) {
+				//console.log(e)
+				var newImage = imageProp;
+				
+				var i = new Image(); 
+				i.onload = function(){
+					newImage.width = i.width;
+					newImage.height = i.height;
+				};
+				i.src = e.target.result;
+				
+				fabric.Image.fromURL(e.target.result, function (img) {
+					img.set(newImage)
+					.setCoords();
+
+					canvas.add(img);
+				});
+			};
+		})(f);
+		reader.readAsDataURL(f);
+	}
+}
+
 function moveSelected(direction) {
 	var activeObject = canvas.getActiveObject();
 
@@ -383,12 +416,12 @@ function moveSelected(direction) {
 }
 
 function getActiveStyle(styleName, object) {
-    object = object || canvas.getActiveObject();
-    if (!object) return '';
+	object = object || canvas.getActiveObject();
+	if (!object) return '';
 
-    return (object.getSelectionStyles && object.isEditing) ?
-    (object.getSelectionStyles()[styleName] || '') :
-    (object[styleName] || '');
+	return (object.getSelectionStyles && object.isEditing) ?
+	(object.getSelectionStyles()[styleName] || '') :
+	(object[styleName] || '');
 };
 
 function setActiveStyle(styleName, value, object) {
@@ -397,12 +430,12 @@ function setActiveStyle(styleName, value, object) {
     if (!object) return;
 
     if (object.setSelectionStyles && object.isEditing) {
-        var style = {};
-        style[styleName] = value;
-        object.setSelectionStyles(style);
-        object.setCoords();
+    	var style = {};
+    	style[styleName] = value;
+    	object.setSelectionStyles(style);
+    	object.setCoords();
     } else {
-        object.set(styleName, value);
+    	object.set(styleName, value);
     }
 
     object.setCoords();
@@ -410,18 +443,18 @@ function setActiveStyle(styleName, value, object) {
 };
 
 function getActiveProp(name) {
-    var object = canvas.getActiveObject();
-    if (!object) return '';
+	var object = canvas.getActiveObject();
+	if (!object) return '';
 
-    return object[name] || '';
+	return object[name] || '';
 }
 
 function setActiveProp(name, value) {
-    var object = canvas.getActiveObject();
-    if (!object) return;
-    object.set(name, value).setCoords();
-    canvas.renderAll();
-    setAttr(name , value , object);
+	var object = canvas.getActiveObject();
+	if (!object) return;
+	object.set(name, value).setCoords();
+	canvas.renderAll();
+	setAttr(name , value , object);
 }
 
 function setAttr(name, value, ob) {
@@ -576,6 +609,15 @@ function setActiveProp(name, value) {
 	canvas.renderAll();
 }
 
+var imageProp = {
+	left: 0,
+	top: 0,
+	width: 100,
+	height: 100,
+	backgroundColor: '#' + getRandomColor(),
+	scaleX: 1,
+	scaleY: 1
+};
 function addImage(imageName , data = {arg:"random",filter:"",image:[{type:"",content:"url-image"}]} ) {
 	var coord = getRandomLeftTop();
 
@@ -592,14 +634,13 @@ function addImage(imageName , data = {arg:"random",filter:"",image:[{type:"",con
 
 	image.src = canvas1.toDataURL();
 
-	var img = new fabric.Image(image, {
-		left: 0,
-		top: 0,
-		width: 100,
-		height: 100,
-		backgroundColor: '#' + getRandomColor(),
-		data: data,
-	}).scale(1).setCoords();
+	var dataImgProp = imageProp;
+	dataImgProp.backgroundColor = '#' + getRandomColor();
+	dataImgProp.width = 100;
+	dataImgProp.height = 100;
+	dataImgProp.data = data;
+	var img = new fabric.Image(image, dataImgProp).setCoords();
+
 	img.toObject = (function (toObject) {
 		return function () {
 			return fabric.util.object.extend(toObject.call(this), {
@@ -624,48 +665,39 @@ $(function() {
 			return 'active';
 		}
 	}
-	$(".jsoneditor-tree").css({"max-height":"400px"})
+	$(".jsoneditor-tree").css({"max-height":"400px"});
+
+	var textProp = {
+		fontSize: 20,
+		left: getRandomInt(0, 100),
+		top: getRandomInt(0, 100),
+		fontFamily: 'helvetica',
+		angle: 0,
+		fill: '#000000',
+		scaleX: 1,
+		scaleY: 1,
+		fontWeight: '',
+		originX: 'left',
+		width: 300,
+		hasRotatingPoint: true,
+		centerTransform: true,
+	};
+
 	registerButton($('#toolbar-text'), function() {
-		var newtext = new fabric.Textbox('new textbox', {
-			fontSize: 20,
-			left: getRandomInt(0, 100),
-			top: getRandomInt(0, 100),
-			fontFamily: 'helvetica',
-			angle: 0,
-			fill: '#000000',
-			scaleX: 1,
-			scaleY: 1,
-			fontWeight: '',
-			originX: 'left',
-			width: 300,
-			hasRotatingPoint: true,
-			centerTransform: true,
-		});
+		delete textProp.data;
+		var newtext = new fabric.Textbox('new textbox', textProp);
 		canvas.add(newtext);
 	});
 	registerButton($('#toolbar-datatext'), function() {
-		var dataText = new fabric.Textbox('data textbox', {
-			fontSize: 20,
-			left: getRandomInt(0, 100),
-			top: getRandomInt(0, 100),
-			fontFamily: 'helvetica',
-			angle: 0,
-			fill: '#000000',
-			scaleX: 1,
-			scaleY: 1,
-			fontWeight: '',
-			originX: 'left',
-			width: 300,
-			hasRotatingPoint: true,
-			centerTransform: true,
-			data: {
-				arg: 'random',
-				text: [{
-					type: '',
-					content: 'Data text'
-				}]
-			}
-		});
+		var dataTextProp = textProp;
+		dataTextProp.data = {
+			arg: 'random',
+			text: [{
+				type: '',
+				content: 'Data text'
+			}]
+		};
+		var dataText = new fabric.Textbox('data textbox', dataTextProp);
 		this.data = dataText.data;
 		dataText.toObject = (function (toObject) {
 			return function () {
@@ -677,8 +709,10 @@ $(function() {
 		canvas.add(dataText);
 		canvas.setActiveObject(dataText);
 	});
-	registerButton($('#toolbar-new-image'), function() {
-		fabric.Image.fromURL('https://via.placeholder.com/100?text=image', function (img) {
+	document.getElementById('temp-image').addEventListener('change', handleFileSelect, false);
+	registerButton($('#toolbar-image'), function() {
+		$('#temp-image').trigger('click');
+		/*fabric.Image.fromURL('https://via.placeholder.com/100?text=image', function (img) {
 			img.set({
 				left: 0,
 				top: 0,
@@ -688,7 +722,7 @@ $(function() {
 			.scale(1)
 			.setCoords();
 			canvas.add(img);
-		});
+		});*/
 	});
 	
 	$(document).on('click', '.dataimage', function(event) {
@@ -698,7 +732,7 @@ $(function() {
 	$(document).on('click', '.fb-image', function(event) {
 		event.preventDefault();
 		/* Act on the event */
-        addImage($(this).data('title') , canvasLayout.stdData[$(this).data('object')]);
+		addImage($(this).data('title') , canvasLayout.stdData[$(this).data('object')]);
 	});
 
 	registerButton($("#toolbar-undo"), function() {
@@ -848,49 +882,67 @@ $(function() {
 			setActiveProp('backgroundColor', '#'+hex);
 		}
 	});
+	$("#stroke-fill").colpick({
+		colorScheme:'dark',
+		onChange:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).val('#'+hex);
+			setActiveProp('stroke', '#'+hex);
+		},
+		onSubmit:function(hsb,hex,rgb,el,bySetColor) {
+			$(el).val('#'+hex);
+			$(el).colpickHide();
+			setActiveProp('stroke', '#'+hex);
+		}
+	});
 
 	// end common tool
 	// textbox editor tool
 	$(document).on('click', '.text-style', function(event) {
-    	event.preventDefault();
-    	var status = activeBtn($(this));
-    	if (status == 'active') {
-    		setActiveStyle($(this).attr('prop'), $(this).attr('val'));
-    	}
-    	if (status == 'deactive') {
-    		setActiveStyle($(this).attr('prop'), '');
-    	}
-    });
+		event.preventDefault();
+		var status = activeBtn($(this));
+		if (status == 'active') {
+			setActiveStyle($(this).attr('prop'), $(this).attr('val'));
+		}
+		if (status == 'deactive') {
+			setActiveStyle($(this).attr('prop'), '');
+		}
+	});
 
-    $(document).on('click', '.text-decoration', function(event) {
-    	event.preventDefault();
-    	var status = activeBtn($(this));
-    	if (status == 'active') {
-    		setActiveStyle($(this).attr('prop'), true);
-    	}
-    	if (status == 'deactive') {
-    		setActiveStyle($(this).attr('prop'), false);
-    	}
-    });
+	$(document).on('click', '.text-decoration', function(event) {
+		event.preventDefault();
+		var status = activeBtn($(this));
+		if (status == 'active') {
+			setActiveStyle($(this).attr('prop'), true);
+		}
+		if (status == 'deactive') {
+			setActiveStyle($(this).attr('prop'), false);
+		}
+	});
 
-    $(document).on('click', '.textAlign', function(event) {
-    	event.preventDefault();
-    	$('.textAlign').removeClass('gt-button-active');
-    	$(this).addClass('gt-button-active');
-    	setActiveStyle('textAlign', $(this).attr('val'));
-    });
-    $(document).on('click', '.v-align', function(event) {
-    	event.preventDefault();
-    	$('.v-align').removeClass('gt-button-active');
-    	$(this).addClass('gt-button-active');
-    	setActiveStyle('originY', $(this).attr('val'));
-    });
+	$(document).on('click', '.textAlign', function(event) {
+		event.preventDefault();
+		$('.textAlign').removeClass('gt-button-active');
+		$(this).addClass('gt-button-active');
+		setActiveStyle('textAlign', $(this).attr('val'));
+	});
+	$(document).on('click', '.v-align', function(event) {
+		event.preventDefault();
+		$('.v-align').removeClass('gt-button-active');
+		$(this).addClass('gt-button-active');
+		setActiveStyle('originY', $(this).attr('val'));
+	});
 
 	$(document).on('change', '.range-style', function(event) {
 		event.preventDefault();
 		/* Act on the event */
-		canvasLayout.textbox[$(this).attr('prop')] = $(this).val();
-		setActiveStyle($(this).attr('prop') , $(this).val());
+		var val = $(this).val();
+		if ($(this).attr('prop') == 'strokeWidth') {
+			val = parseInt(val, 10);
+		}
+		if ($(this).data('object') == 'prop') {
+			canvasLayout.prop[$(this).attr('prop')] = val;
+		} else canvasLayout.textbox[$(this).attr('prop')] = val;
+		setActiveStyle($(this).attr('prop') , val);
 	});
 	// end textbox editor tool
 
@@ -898,58 +950,58 @@ $(function() {
 
 (function(global) {
 
-  function capitalize(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+	function capitalize(string) {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
 
-  function pad(str, length) {
-    while (str.length < length) {
-      str = '0' + str;
-    }
-    return str;
-  }
+	function pad(str, length) {
+		while (str.length < length) {
+			str = '0' + str;
+		}
+		return str;
+	}
 
-  var getRandomInt = fabric.util.getRandomInt;
-  function getRandomColor() {
-    return (
-      pad(getRandomInt(0, 255).toString(16), 2) +
-      pad(getRandomInt(0, 255).toString(16), 2) +
-      pad(getRandomInt(0, 255).toString(16), 2)
-    );
-  }
+	var getRandomInt = fabric.util.getRandomInt;
+	function getRandomColor() {
+		return (
+			pad(getRandomInt(0, 255).toString(16), 2) +
+			pad(getRandomInt(0, 255).toString(16), 2) +
+			pad(getRandomInt(0, 255).toString(16), 2)
+			);
+	}
 
-  function getRandomNum(min, max) {
-    return Math.random() * (max - min) + min;
-  }
+	function getRandomNum(min, max) {
+		return Math.random() * (max - min) + min;
+	}
 
-  function getRandomLeftTop() {
-    var offset = 50;
-    return {
-      left: fabric.util.getRandomInt(0 + offset, 700 - offset),
-      top: fabric.util.getRandomInt(0 + offset, 500 - offset)
-    };
-  }
+	function getRandomLeftTop() {
+		var offset = 50;
+		return {
+			left: fabric.util.getRandomInt(0 + offset, 700 - offset),
+			top: fabric.util.getRandomInt(0 + offset, 500 - offset)
+		};
+	}
 
-  var supportsInputOfType = function(type) {
-    return function() {
-      var el = document.createElement('input');
-      try {
-        el.type = type;
-      }
-      catch(err) { }
-      return el.type === type;
-    };
-  };
+	var supportsInputOfType = function(type) {
+		return function() {
+			var el = document.createElement('input');
+			try {
+				el.type = type;
+			}
+			catch(err) { }
+			return el.type === type;
+		};
+	};
 
-  var supportsSlider = supportsInputOfType('range'),
-      supportsColorpicker = supportsInputOfType('color');
+	var supportsSlider = supportsInputOfType('range'),
+	supportsColorpicker = supportsInputOfType('color');
 
-  global.getRandomNum = getRandomNum;
-  global.getRandomInt = getRandomInt;
-  global.getRandomColor = getRandomColor;
-  global.getRandomLeftTop = getRandomLeftTop;
-  global.supportsSlider = supportsSlider;
-  global.supportsColorpicker = supportsColorpicker;
-  global.capitalize = capitalize;
+	global.getRandomNum = getRandomNum;
+	global.getRandomInt = getRandomInt;
+	global.getRandomColor = getRandomColor;
+	global.getRandomLeftTop = getRandomLeftTop;
+	global.supportsSlider = supportsSlider;
+	global.supportsColorpicker = supportsColorpicker;
+	global.capitalize = capitalize;
 
 })(this);
